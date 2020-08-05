@@ -23,20 +23,21 @@ resource "aws_launch_template" "on_demand" {
   count = var.enabled && var.on_demand_enabled ? 1 : 0
 
   name_prefix = format("%s%s", module.labels.id, var.delimiter)
-  block_device_mappings {
-    device_name = "/dev/sda1"
-    ebs {
-      volume_size = var.volume_size
-      encrypted   = var.ebs_encryption
-      kms_key_id  = var.kms_key_arn
-      volume_type = var.volume_type
-    }
-  }
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   instance_type                        = var.instance_type
   key_name                             = var.key_name
   user_data                            = var.user_data_base64
+
+  block_device_mappings {
+	device_name = "/dev/sda1"
+	ebs {
+	  volume_size = var.volume_size
+	  encrypted   = var.ebs_encryption
+	  kms_key_id  = var.kms_key_arn
+	  volume_type = var.volume_type
+	}
+  }
 
   iam_instance_profile {
     name = var.iam_instance_profile_name
