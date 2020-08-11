@@ -161,8 +161,8 @@ resource "aws_autoscaling_schedule" "scaleup" {
   count                  = local.autoscaling_enabled_schedule ? 1 : 0
   autoscaling_group_name = join("", aws_autoscaling_group.on_demand.*.name)
   scheduled_action_name  = format("%s-scheduler-up", module.labels.id)
-  max_size               = var.max_size
-  min_size               = var.min_size
+  max_size               = var.max_size_scaleup
+  min_size               = var.min_size_scaleup
   desired_capacity       = var.scale_up_desired
   recurrence             = var.scheduler_up
 }

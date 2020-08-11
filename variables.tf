@@ -126,6 +126,18 @@ variable "min_size" {
   description = "The minimum size of the autoscale group."
 }
 
+variable "max_size_scaleup" {
+  type        = number
+  default     = 3
+  description = "The maximum size of the autoscale group."
+}
+
+variable "min_size_scaleup" {
+  type        = number
+  default     = 1
+  description = "The minimum size of the autoscale group."
+}
+
 variable "subnet_ids" {
   type        = list(string)
   default     = []

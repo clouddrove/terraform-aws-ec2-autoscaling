@@ -71,35 +71,56 @@ module "ec2-autoscale" {
   environment = "test"
   label_order = ["application", "environment", "name"]
 
+  #Launch template
   image_id                  = "ami-0ceab0713d94f9276"
   iam_instance_profile_name = "test-moneyceo-ec2-instance-instance-profile"
-  security_group_ids        = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   user_data_base64          = ""
 
   instance_type                           = "t2.nano"
-  subnet_ids                              = tolist(module.public_subnets.public_subnet_id)
+
+
+  # on_dimand
+  on_demand_enabled                       = true
   min_size                                = 1
-  max_size                                = 3
-  desired_capacity                        = 3
-  scheduler_down                          = "0 19 * * MON-FRI"
-  scheduler_up                            = "0 6 * * MON-FRI"
-  min_size_scaledown                      = 0
-  max_size_scaledown                      = 1
-  schedule_enabled                        = false
+  desired_capacity                        = 1
+  max_size                                = 2
+
+  # schedule_instance
+  schedule_enabled                        = true
+
+    # up
+  scheduler_up                            = "0 8 * * MON-FRI"
+  min_size_scaleup                        = 2
   scale_up_desired                        = 2
+  max_size_scaleup                        = 3
+
+
+  # down
+  scheduler_down                          = "0 22 * * MON-FRI"
+  min_size_scaledown                      = 1
   scale_down_desired                      = 1
-  volume_size                             = 20
+  max_size_scaledown                      = 2
+
+
+  #volumes
+  volume_type                             = "standard"
   ebs_encryption                          = false
   kms_key_arn                             = ""
-  volume_type                             = "standard"
+  volume_size                             = 20
+
+  #Network
   associate_public_ip_address             = true
-  instance_initiated_shutdown_behavior    = "terminate"
   key_name                                = module.keypair.name
-  enable_monitoring                       = true
+  subnet_ids                              = tolist(module.public_subnets.public_subnet_id)
   load_balancers                          = []
-  health_check_type                       = "EC2"
+  security_group_ids                      = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   min_elb_capacity                        = 0
   target_group_arns                       = []
+  health_check_type                       = "EC2"
+
+
+  instance_initiated_shutdown_behavior    = "terminate"
+  enable_monitoring                       = true
   default_cooldown                        = 150
   force_delete                            = false
   termination_policies                    = ["Default"]
@@ -109,7 +130,8 @@ module "ec2-autoscale" {
   wait_for_capacity_timeout               = "15m"
   protect_from_scale_in                   = false
   service_linked_role_arn                 = ""
-  on_demand_enabled                       = true
+
+
   scale_up_cooldown_seconds               = 150
   scale_up_scaling_adjustment             = 1
   scale_up_adjustment_type                = "ChangeInCapacity"
@@ -118,6 +140,7 @@ module "ec2-autoscale" {
   scale_down_scaling_adjustment           = -1
   scale_down_adjustment_type              = "ChangeInCapacity"
   scale_down_policy_type                  = "SimpleScaling"
+
   cpu_utilization_high_evaluation_periods = 2
   cpu_utilization_high_period_seconds     = 300
   cpu_utilization_high_threshold_percent  = 10
