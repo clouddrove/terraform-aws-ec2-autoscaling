@@ -8,7 +8,7 @@ module "keypair" {
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "devops"
   enable_key_pair = true
-  environment = "test"
+  environment     = "test"
 
 }
 
