@@ -80,7 +80,7 @@ module "ec2-autoscale" {
   label_order = ["environment", "name"]
 
   image_id = "ami-0ceab0713d94f9276"
-  #iam_instance_profile_name = ""
+  iam_instance_profile_name = ""
   security_group_ids = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   user_data_base64   = ""
 
