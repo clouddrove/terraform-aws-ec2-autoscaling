@@ -4,7 +4,7 @@
 #Module      : label
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.0"
+  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.13.0"
 
   name        = var.name
   application = var.application
@@ -22,7 +22,7 @@ module "labels" {
 resource "aws_launch_template" "on_demand" {
   count = var.enabled && var.on_demand_enabled ? 1 : 0
 
-  name_prefix = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix                          = format("%s%s", module.labels.id, var.delimiter)
   image_id                             = var.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   instance_type                        = var.instance_type
@@ -30,13 +30,13 @@ resource "aws_launch_template" "on_demand" {
   user_data                            = var.user_data_base64
 
   block_device_mappings {
-	device_name = "/dev/sda1"
-	ebs {
-	  volume_size = var.volume_size
-	  encrypted   = var.ebs_encryption
-	  kms_key_id  = var.kms_key_arn
-	  volume_type = var.volume_type
-	}
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size = var.volume_size
+      encrypted   = var.ebs_encryption
+      kms_key_id  = var.kms_key_arn
+      volume_type = var.volume_type
+    }
   }
 
   iam_instance_profile {
