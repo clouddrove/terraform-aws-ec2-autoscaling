@@ -3,7 +3,8 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.13.0"
+  source  = "clouddrove/keypair/aws"
+  version = "0.15.0"
 
   key_path        = "~/.ssh/id_rsa.pub"
   key_name        = "devops"
@@ -13,23 +14,23 @@ module "keypair" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.13.0"
+  source  = "clouddrove/vpc/aws"
+  version = "0.15.0"
 
   name        = "vpc"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   cidr_block = "172.16.0.0/16"
 }
 
 module "public_subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.13.0"
+  source  = "clouddrove/subnet/aws"
+  version = "0.15.0"
 
   name        = "public-subnet"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   availability_zones = ["eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -40,12 +41,12 @@ module "public_subnets" {
 }
 
 module "http-https" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.13.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "http-https"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
@@ -53,12 +54,12 @@ module "http-https" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.13.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "ssh"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block, "0.0.0.0/0"]
@@ -70,14 +71,13 @@ module "ec2-autoscale" {
 
   enabled     = true
   name        = "ec2"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["application", "environment", "name"]
+  label_order = ["environment", "name"]
 
-  image_id                  = "ami-0ceab0713d94f9276"
-  iam_instance_profile_name = "test-moneyceo"
-  security_group_ids        = [module.ssh.security_group_ids, module.http-https.security_group_ids]
-  user_data_base64          = ""
+  image_id = "ami-0ceab0713d94f9276"
+  #iam_instance_profile_name = "test-moneyceo"
+  security_group_ids = [module.ssh.security_group_ids, module.http-https.security_group_ids]
+  user_data_base64   = ""
 
   subnet_ids                              = tolist(module.public_subnets.public_subnet_id)
   spot_max_size                           = 3
