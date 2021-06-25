@@ -5,3 +5,4 @@
 .idea
 *.iml
 _example/.terraform.tfstate.lock.info
+*.terrafrom.lock.hcl
