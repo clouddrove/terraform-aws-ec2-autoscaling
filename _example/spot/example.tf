@@ -66,6 +66,43 @@ module "ssh" {
   allowed_ports = [22]
 }
 
+module "iam-role" {
+  source  = "clouddrove/iam-role/aws"
+  version = "0.15.0"
+
+  name               = "clouddrove"
+  environment        = "test"
+  label_order        = ["name", "environment"]
+  assume_role_policy = data.aws_iam_policy_document.default.json
+
+  policy_enabled = true
+  policy         = data.aws_iam_policy_document.iam-policy.json
+}
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
 module "ec2-autoscale" {
   source = "../../"
 
@@ -74,8 +111,10 @@ module "ec2-autoscale" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  image_id = "ami-0ceab0713d94f9276"
-  #iam_instance_profile_name = "test-moneyceo"
+  image_id                  = "ami-0ceab0713d94f9276"
+  instance_profile_enabled  = true
+  iam_instance_profile_name = module.iam-role.name
+
   security_group_ids = [module.ssh.security_group_ids, module.http-https.security_group_ids]
   user_data_base64   = ""
 

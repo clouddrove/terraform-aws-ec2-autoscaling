@@ -39,7 +39,7 @@ resource "aws_launch_template" "on_demand" {
   }
 
   iam_instance_profile {
-    name = var.iam_instance_profile_name
+    name = join("", aws_iam_instance_profile.default.*.name)
   }
 
   monitoring {
@@ -92,7 +92,7 @@ resource "aws_launch_template" "spot" {
   user_data                            = var.user_data_base64
 
   iam_instance_profile {
-    name = var.iam_instance_profile_name
+    name = join("", aws_iam_instance_profile.default.*.name)
   }
 
   monitoring {
@@ -231,4 +231,12 @@ resource "aws_autoscaling_group" "spot" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+#Module      : IAM INSTANCE PROFILE
+#Description : Provides an IAM instance profile.
+resource "aws_iam_instance_profile" "default" {
+  count = var.enabled == true && var.instance_profile_enabled ? 1 : 0
+  name  = format("%s%sinstance-profile", module.labels.id, var.delimiter)
+  role  = var.iam_instance_profile_name
 }

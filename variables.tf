@@ -69,13 +69,13 @@ variable "instance_initiated_shutdown_behavior" {
 
 variable "instance_type" {
   type        = string
-  default     = ""
+  default     = "t2.nano"
   description = "Instance type to launch."
 }
 
 variable "iam_instance_profile_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The IAM instance profile name to associate with launched instances."
 }
 
@@ -94,6 +94,12 @@ variable "security_group_ids" {
 variable "associate_public_ip_address" {
   type        = bool
   default     = false
+  description = "Associate a public IP address with an instance in a VPC."
+}
+
+variable "instance_profile_enabled" {
+  type        = bool
+  default     = true
   description = "Associate a public IP address with an instance in a VPC."
 }
 
