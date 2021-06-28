@@ -31,9 +31,8 @@ include:
   - "terraform.md"
 usage: |-
   Here is examples of how you can use this module in your inventory structure:
-  ### On Demand
+  ###  On_Demand
   ```hcl
-
     module "ec2-autoscale" {
       enabled     = true
       name        = "ec2"
@@ -118,15 +117,14 @@ usage: |-
       cpu_utilization_low_threshold_percent   = 1
       }
   ```
- ###spot
+  ### spot
   ```hcl
-     module "ec2-autoscale" {
+      module "ec2-autoscale" {
        enabled     = true
        name        = "ec2"
        environment = "test"
        label_order = ["environment", "name"]
-
-       image_id = "ami-0ceab0713d94f9276"
+       image_id    = "ami-0ceab0713d94f9276"
        iam_instance_profile_name = module.iam-role.name
 
         security_group_ids = [module.ssh.security_group_ids, module.http-https.security_group_ids]
@@ -183,5 +181,5 @@ usage: |-
         cpu_utilization_low_period_seconds      = 180
         cpu_utilization_low_statistic           = "Average"
         cpu_utilization_low_threshold_percent   = 1
-     }
+    }
   ```
