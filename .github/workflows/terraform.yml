@@ -22,7 +22,7 @@ jobs:
           actions_subcommand: 'fmt'
 
   on-demand:
-    name: 'basic_example'
+    name: 'on-demand'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -54,7 +54,7 @@ jobs:
           tf_actions_working_dir: ./_example/on-demand
 
   spot:
-    name: 'secure_example'
+    name: 'spot'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
