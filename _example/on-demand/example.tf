@@ -3,32 +3,33 @@ provider "aws" {
 }
 
 module "keypair" {
-  source = "git::https://github.com/clouddrove/terraform-aws-keypair.git?ref=tags/0.13.0"
+  source  = "clouddrove/keypair/aws"
+  version = "0.15.0"
 
-  key_path        = "~/.ssh/id_rsa.pub"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAA/+0gYmv60AJc+btcl+ehTSSO//40JS2YB7zJkeBL3/Fd+YxeC8j0ZyIedhuQAgQEuS6sccV2yv2Htj0pWBJeLbEvdU8BsuDijW7TzrKa81pjVwnmd22m1DWnPqUKZcOgr5e01Rwr4ot2c+ZjoTuR9OcpWYyvG/3jsyNL34kZZGOwwhB9sDYu5YTcaJdgrZq8mZSvYP9R3WUpjyu64ad9692/8/fNWkXc9Z1ScwRI6jH922rOGTycH8kaFUhh/WcAJeWe91B9YT2Prs5ZjNcSOx8xMa8XsUHw0quTLFq9THu4OjZwgUena2P6CRo08qdt4W+M20Wiz5tBg1vXRtLg7PqJJM2fvrAGuBvZesx6AUlnUxnpKiW2oaCWgO1eu7yxTNkGxtbLkjTL9q56Zn5MepgRBadg/ECSRlA2fpWd5VlS5nM+ddFdc64s+65WbJBAPqnetL624/MY7yRi0HIv0EbGJSI8SwSoPwHV2ZYSXUb/g0lURE4woGROXLCHJ/CUAhWU0xhbhwyBAvvJ/7KD57S6su4k/lzbxW9TDoBrNiSlZAbH5sV+UEg/xQSkBbvZ+mNLCGwDvTYJvu/b6MGWu4YYo1qa1eMcJBbuYbg2SuEyctHXXGH6ul7sn3SauFzvbuDx0ZM2GE+TIQ1/BdfvNiUjedKVnvl8BcswghWyk8nsHmYA4AcjD+kLfeF6FJh2cpHDVHjtiO0YPg1xS9gQqiiZIAWqR3vl9twoAj4QOwcA+tW+zyu2vwusjfkRbytuGJxJL3UksJy1Wn3/T9m2ZeXhpatvFCwpxkxRxN4Xezlpielyu+fxsjUv64nouZvsitQM4JnctQmPzS6s2od3Vw5PQZUShwQAoGT5rvgpFoVnXUa8hw0fGd+RdfAsnJ34ZlObXXaQheNSybkm/kkHIBxUFJuWkxuWc62yBpnVTbrGo6jOoyzGnbAo1KmYIRszVlmJhMK6p6q3rP5hWJRgb+lqf8nCBEDjLi0fglPf meitner"
   key_name        = "devops"
   environment     = "test"
   enable_key_pair = true
 }
 
 module "vpc" {
-  source = "git::https://github.com/clouddrove/terraform-aws-vpc.git?ref=tags/0.13.0"
+  source  = "clouddrove/vpc/aws"
+  version = "0.15.0"
 
   name        = "vpc"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   cidr_block = "172.16.0.0/16"
 }
 
 module "public_subnets" {
-  source = "git::https://github.com/clouddrove/terraform-aws-subnet.git?ref=tags/0.13.0"
+  source  = "clouddrove/subnet/aws"
+  version = "0.15.0"
 
   name               = "public-subnet"
-  application        = "clouddrove"
   environment        = "test"
-  label_order        = ["environment", "application", "name"]
+  label_order        = ["environment", "name"]
   availability_zones = ["eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
@@ -38,12 +39,12 @@ module "public_subnets" {
 }
 
 module "http-https" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.13.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "http-https"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
@@ -51,16 +52,53 @@ module "http-https" {
 }
 
 module "ssh" {
-  source = "git::https://github.com/clouddrove/terraform-aws-security-group.git?ref=tags/0.13.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name        = "ssh"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["environment", "application", "name"]
+  label_order = ["environment", "name"]
 
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block, "0.0.0.0/0"]
   allowed_ports = [22]
+}
+
+module "iam-role" {
+  source  = "clouddrove/iam-role/aws"
+  version = "0.15.0"
+
+  name               = "clouddrove"
+  environment        = "test"
+  label_order        = ["name", "environment"]
+  assume_role_policy = data.aws_iam_policy_document.default.json
+
+  policy_enabled = true
+  policy         = data.aws_iam_policy_document.iam-policy.json
+}
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
 
 module "ec2-autoscale" {
@@ -68,13 +106,13 @@ module "ec2-autoscale" {
 
   enabled     = true
   name        = "ec2"
-  application = "clouddrove"
   environment = "test"
-  label_order = ["application", "environment", "name"]
+  label_order = ["environment", "name"]
 
   #Launch template
   image_id                  = "ami-08bac620dc84221eb"
-  iam_instance_profile_name = "test-moneyceo"
+  instance_profile_enabled  = true
+  iam_instance_profile_name = module.iam-role.name
   user_data_base64          = ""
 
   instance_type = "t2.nano"

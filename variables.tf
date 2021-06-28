@@ -6,10 +6,11 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "application" {
+
+variable "repository" {
   type        = string
-  default     = ""
-  description = "Application (e.g. `cd` or `clouddrove`)."
+  default     = "https://github.com/clouddrove/terraform-aws-ec2-autoscaling"
+  description = "Terraform current module repo"
 }
 
 variable "environment" {
@@ -19,19 +20,19 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -68,13 +69,13 @@ variable "instance_initiated_shutdown_behavior" {
 
 variable "instance_type" {
   type        = string
-  default     = ""
+  default     = "t2.nano"
   description = "Instance type to launch."
 }
 
 variable "iam_instance_profile_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The IAM instance profile name to associate with launched instances."
 }
 
@@ -93,6 +94,12 @@ variable "security_group_ids" {
 variable "associate_public_ip_address" {
   type        = bool
   default     = false
+  description = "Associate a public IP address with an instance in a VPC."
+}
+
+variable "instance_profile_enabled" {
+  type        = bool
+  default     = true
   description = "Associate a public IP address with an instance in a VPC."
 }
 
