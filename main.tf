@@ -65,11 +65,10 @@ resource "aws_launch_template" "on_demand" {
   }
 
   tags = module.labels.tags
-#tfsec:ignore:aws-autoscaling-enforce-http-token-imds
   lifecycle {
     create_before_destroy = true
   }
-} 
+} #tfsec:ignore:aws-autoscaling-enforce-http-token-imds
 #Module      : LAUNCH TEMPLATE
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
@@ -141,10 +140,9 @@ resource "aws_launch_template" "spot" {
       "Market_Type" = "spot"
     }
   )
-  #tfsec:ignore:aws-autoscaling-enforce-http-token-imds
   lifecycle {
     create_before_destroy = true
-  }
+  }#tfsec:ignore:aws-autoscaling-enforce-http-token-imds
 }
 
 
