@@ -6,7 +6,7 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "0.15.0"
 
-  public_key      = "ssh-rsaDT+0gYmv60AJc+btcl+ehTSSO//YbWDnrLpcTDx8nu4d0sLz/40JS2YB7zJkeBL3/Fd+YxeC8j0ZyIedhuQAgQEuS6sccV2yv2Htj0pWBJeLbEvdU8BsuDijW7TzrKa81pjVwnmd22m1DWnPqUKZcOgr5e01Rwr4ot2c+ZjoTuR9OcpWYyvG/3jsyNL34kZZGOwwhB9sDYu5YTcaJdgrZq8mZSvYP9R3WUpjyu64ad9692/8/fNWkXc9Z1ScwRI6jH922rOGTycH8kaFUhh/WcAJeWe91B9YT2Prs5ZjNcSOx8xMa8XsUHw0quTLFq9THu4OjZwgUena2P6CRo08qdt4W+M20Wiz5tBg1vXRtLg7PqJJM2fvrAGuBvZesx6AUlnUxnpKiW2oaCWgO1eu7yxTNkGxtbLkjTL9q56Zn5MepgRBadg/ECSRlA2fpWd5VlS5nM+ddFdc64s+65WbJBAPqnetL624/MY7yRi0HIv0EbGJSI8SwSoPwHV2ZYSXUb/g0lURE4woGROXLCHJ/CUAhWU0xhbhwyBAvvJ/7KD57S6su4k/lzbxW9TDoBrNiSlZAbH5sV+UEg/xQSkBbvZ+mNLCGwDvTYJvu/b6MGWu4YYo1qa1eMcJBbuYbg2SuEyctHXXGH6ul7sn3SauFzvbuDx0ZM2GE+TIQ1/BdfvNiUjedKVnvl8BcswghWyk8nsHmYA4AcjD+kLfeF6FJh2cpHDVHjtiO0YPg1xS9gQqiiZIAWqR3vl9twoAj4QOwcA+tW+zyu2vwusjfkRbytuGJxJL3UksJy1Wn3/T9m2ZeXhpatvFCwpxkxRxN4Xezlpielyu+fxsjUv64nouZvsitQM4JnctQmPzS6s2od3Vw5PQZUShwQAoGT5rvgpFoVnXUa8hw0fGd+RdfAsnJ34ZlObXXaQheNSybkm/kkHIBxUFJuWkxuWc62yBpnVTbrGo6jOoyzGnbAo1KmYIRszVlmJhMK6p6q3rP5hWJRgb+lqf8nCBEDjLi0fglPf meitner"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMw9taDn3K84VTc8hA4Sm+tCmh6pg53eSeIvHpJoH5VN917JHNcDf/C8rA0bl6RrRpmDXieA5313Br3UP5qXZSebyRA+WcXtxB8zk9xntliwXU+GpX4WCMcCPLgDkUbbmKInESoH2DFnqgfxyWQaOYZJ2W7/6Aa17qTtrT04FdQel2jdNGjp7BwjHFJxAiSUbDuJPFjZUoEATpryUyT4opAQh7lo/ZwSxrH6wPSGAC0npp/hiJ8/PN2zpFbVJBlHXX96bCGfYQUC013xN54z4HmElGTCtC45SGQ766lmGiIRfxUh/EprjrCQ/u0yOidz1l/eed/CruKss2Vzgd9CnA4tB/3UhsAnEZoTz2Qb4NnWIdHZC8kKIlAumQxLEb/yukofdO0JEGi07LsgwRx1gDcESFzcfnHHNXMybrPU3YrOPI9x22QHt5ufmeZTw3zqIsm7plxhUlhwaIEOzKLjZC9Y9L6FAulz0uMKsOdDqXKAkrujI6/cgxHqUZ8oq8t8E= prashant@prashant"
   key_name        = "devops"
   enable_key_pair = true
   environment     = "test"
@@ -71,7 +71,7 @@ module "iam-role" {
   version = "0.15.0"
 
   name               = "clouddrove"
-  environment        = "test"
+  environment        = "test2"
   label_order        = ["name", "environment"]
   assume_role_policy = data.aws_iam_policy_document.default.json
 
@@ -108,7 +108,7 @@ module "ec2-autoscale" {
 
   enabled     = true
   name        = "ec2"
-  environment = "test"
+  environment = "test2"
   label_order = ["environment", "name"]
 
   image_id                  = "ami-0ceab0713d94f9276"

@@ -6,8 +6,8 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "0.15.0"
 
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAA/+0gYmv60AJc+btcl+ehTSSO//40JS2YB7zJkeBL3/Fd+YxeC8j0ZyIedhuQAgQEuS6sccV2yv2Htj0pWBJeLbEvdU8BsuDijW7TzrKa81pjVwnmd22m1DWnPqUKZcOgr5e01Rwr4ot2c+ZjoTuR9OcpWYyvG/3jsyNL34kZZGOwwhB9sDYu5YTcaJdgrZq8mZSvYP9R3WUpjyu64ad9692/8/fNWkXc9Z1ScwRI6jH922rOGTycH8kaFUhh/WcAJeWe91B9YT2Prs5ZjNcSOx8xMa8XsUHw0quTLFq9THu4OjZwgUena2P6CRo08qdt4W+M20Wiz5tBg1vXRtLg7PqJJM2fvrAGuBvZesx6AUlnUxnpKiW2oaCWgO1eu7yxTNkGxtbLkjTL9q56Zn5MepgRBadg/ECSRlA2fpWd5VlS5nM+ddFdc64s+65WbJBAPqnetL624/MY7yRi0HIv0EbGJSI8SwSoPwHV2ZYSXUb/g0lURE4woGROXLCHJ/CUAhWU0xhbhwyBAvvJ/7KD57S6su4k/lzbxW9TDoBrNiSlZAbH5sV+UEg/xQSkBbvZ+mNLCGwDvTYJvu/b6MGWu4YYo1qa1eMcJBbuYbg2SuEyctHXXGH6ul7sn3SauFzvbuDx0ZM2GE+TIQ1/BdfvNiUjedKVnvl8BcswghWyk8nsHmYA4AcjD+kLfeF6FJh2cpHDVHjtiO0YPg1xS9gQqiiZIAWqR3vl9twoAj4QOwcA+tW+zyu2vwusjfkRbytuGJxJL3UksJy1Wn3/T9m2ZeXhpatvFCwpxkxRxN4Xezlpielyu+fxsjUv64nouZvsitQM4JnctQmPzS6s2od3Vw5PQZUShwQAoGT5rvgpFoVnXUa8hw0fGd+RdfAsnJ34ZlObXXaQheNSybkm/kkHIBxUFJuWkxuWc62yBpnVTbrGo6jOoyzGnbAo1KmYIRszVlmJhMK6p6q3rP5hWJRgb+lqf8nCBEDjLi0fglPf meitner"
-  key_name        = "devops"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  key_name        = "devops1"
   environment     = "test"
   enable_key_pair = true
 }
@@ -68,7 +68,7 @@ module "iam-role" {
   source  = "clouddrove/iam-role/aws"
   version = "0.15.0"
 
-  name               = "clouddrove"
+  name               = "clouddrove1"
   environment        = "test"
   label_order        = ["name", "environment"]
   assume_role_policy = data.aws_iam_policy_document.default.json
@@ -106,7 +106,7 @@ module "ec2-autoscale" {
 
   enabled     = true
   name        = "ec2"
-  environment = "test"
+  environment = "test1"
   label_order = ["environment", "name"]
 
   #Launch template
