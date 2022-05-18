@@ -4,7 +4,7 @@ provider "aws" {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMw9taDn3K84VTc8hA4Sm+tCmh6pg53eSeIvHpJoH5VN917JHNcDf/C8rA0bl6RrRpmDXieA5313Br3UP5qXZSebyRA+WcXtxB8zk9xntliwXU+GpX4WCMcCPLgDkUbbmKInESoH2DFnqgfxyWQaOYZJ2W7/6Aa17qTtrT04FdQel2jdNGjp7BwjHFJxAiSUbDuJPFjZUoEATpryUyT4opAQh7lo/ZwSxrH6wPSGAC0npp/hiJ8/PN2zpFbVJBlHXX96bCGfYQUC013xN54z4HmElGTCtC45SGQ766lmGiIRfxUh/EprjrCQ/u0yOidz1l/eed/CruKss2Vzgd9CnA4tB/3UhsAnEZoTz2Qb4NnWIdHZC8kKIlAumQxLEb/yukofdO0JEGi07LsgwRx1gDcESFzcfnHHNXMybrPU3YrOPI9x22QHt5ufmeZTw3zqIsm7plxhUlhwaIEOzKLjZC9Y9L6FAulz0uMKsOdDqXKAkrujI6/cgxHqUZ8oq8t8E= prashant@prashant"
   key_name        = "devops"
@@ -15,7 +15,7 @@ module "keypair" {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "0.15.0"
+  version = "0.15.1"
 
   name        = "vpc"
   environment = "test"
@@ -26,7 +26,7 @@ module "vpc" {
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "0.15.3"
 
   name        = "public-subnet"
   environment = "test"
@@ -42,8 +42,7 @@ module "public_subnets" {
 
 module "http-https" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
-
+  version = "1.0.1"
   name        = "http-https"
   environment = "test"
   label_order = ["environment", "name"]
@@ -55,7 +54,7 @@ module "http-https" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   name        = "ssh"
   environment = "test"
@@ -68,7 +67,7 @@ module "ssh" {
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   name               = "clouddrove"
   environment        = "test2"
