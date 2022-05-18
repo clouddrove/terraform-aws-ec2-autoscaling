@@ -4,17 +4,17 @@ provider "aws" {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  key_name        = "devops1"
+  key_name        = "devops"
   environment     = "test"
   enable_key_pair = true
 }
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "0.15.0"
+  version = "0.15.1"
 
   name        = "vpc"
   environment = "test"
@@ -25,7 +25,7 @@ module "vpc" {
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "0.15.3"
 
   name               = "public-subnet"
   environment        = "test"
@@ -40,7 +40,7 @@ module "public_subnets" {
 
 module "http-https" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   name        = "http-https"
   environment = "test"
@@ -53,7 +53,7 @@ module "http-https" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
   name        = "ssh"
   environment = "test"
@@ -66,9 +66,9 @@ module "ssh" {
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "0.15.0"
+  version = "1.0.1"
 
-  name               = "clouddrove1"
+  name               = "clouddrove"
   environment        = "test"
   label_order        = ["name", "environment"]
   assume_role_policy = data.aws_iam_policy_document.default.json
