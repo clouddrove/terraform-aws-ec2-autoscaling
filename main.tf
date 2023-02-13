@@ -5,7 +5,7 @@
 #Description : Terraform module to create consistent naming for multiple names.
 module "labels" {
   source  = "clouddrove/labels/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = var.name
   environment = var.environment
@@ -69,7 +69,7 @@ resource "aws_launch_template" "on_demand" {
   lifecycle {
     create_before_destroy = true
   }
-} 
+}
 #Module      : LAUNCH TEMPLATE
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
