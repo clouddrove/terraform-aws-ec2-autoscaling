@@ -41,8 +41,8 @@ module "public_subnets" {
 }
 
 module "http-https" {
-  source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
+  source      = "clouddrove/security-group/aws"
+  version     = "1.3.0"
   name        = "http-https"
   environment = "test"
   label_order = ["environment", "name"]

@@ -69,7 +69,7 @@ resource "aws_launch_template" "on_demand" {
   lifecycle {
     create_before_destroy = true
   }
-} 
+}
 #Module      : LAUNCH TEMPLATE
 #Description : Provides an EC2 launch template resource. Can be used to create instances or
 #              auto scaling groups.
