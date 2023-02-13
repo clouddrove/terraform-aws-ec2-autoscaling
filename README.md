@@ -78,6 +78,7 @@ Here is examples of how you can use this module in your inventory structure:
 ###  On_Demand
 ```hcl
   module "ec2-autoscale" {
+    version           = "1.3.0"
     enabled     = true
     name        = "ec2"
     environment = "test"
