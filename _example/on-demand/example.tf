@@ -6,7 +6,7 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.0"
 
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCXgACFCV7cfJ3hAuzamUbxkcV42H9yS+z0XCGyjtYRrhjmag0F31iz90o674D3giIelkFPgzC0bQOoWhobeKyP7dJ1/f0DdoGY29bxYSDX65fE0hpBVyUtXjcy/bNfyMlrNL2TqZtFcvNHPfxo1phrvUF4ihwzbxGkejT7H75AA8KDqCfJHvOTYazp18CpKcHpJhAtAUnwl6qjdQHlj96V+8R0WaDDRSFYR8iHknptYvYL07GJzrDBw1u+8T3eYE5F6G/Mp5ns4/lsZ5Wj9psyefSej3XmPi5jINbl5VU4yx66GxgkS1HlC5J/LBGxRTB/QrZPQDU/ovFx4azPe6n8HhfiBSnwsYxQhhYuB2D0gi+zAEWlCEwevpsarBqA8uqmsek7wz1FGwSLGS1XsWMQw8bKyXRt8967zb0tp6Sdm9OqfGmTkAuG4OmFUVeYvL4aXqZALeFmmhVyp9Q//qWsTcDmJQFHx03JaK4q42vNiJkWH09aFbwgsd7sDyN0aaM= vibhuti@vibhuti-VivoBook-ASUSLaptop-X515JAB-X515JA"
+  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   key_name        = "devops"
   environment     = "test"
   enable_key_pair = true
