@@ -65,7 +65,7 @@ resource "aws_launch_template" "on_demand" {
     tags          = module.labels.tags
   }
 
-  tags= module.labels.tags
+  tags = module.labels.tags
   lifecycle {
     create_before_destroy = true
   }
@@ -178,14 +178,6 @@ resource "aws_autoscaling_group" "on_demand" {
     version = aws_launch_template.on_demand[0].latest_version
   }
 
-  /*tags = flatten([
-    for key in keys(module.labels.tags) :
-    {
-      key                 = key
-      value               = module.labels.tags[key]
-      propagate_at_launch = true
-    }
-  ])*/
   dynamic "tag" {
   for_each = var.tags
   content {
