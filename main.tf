@@ -185,12 +185,14 @@ resource "aws_autoscaling_group" "on_demand" {
       value               = module.labels.tags[key]
       propagate_at_launch = true
     }
-  ])
-  */
-  tag {
-  key                 = "module.labels.tags"
-  value               = "module.labels.tags"
-  propagate_at_launch = true
+  ])*/
+  dynamic "tag" {
+  for_each = var.tags
+  content {
+    key                 = tag.key
+    value               = tag.value
+    propagate_at_launch = true
+  }
 }
 
   lifecycle {
@@ -227,22 +229,15 @@ resource "aws_autoscaling_group" "spot" {
     id      = join("", aws_launch_template.spot.*.id)
     version = join("", aws_launch_template.spot.*.latest_version)
   }
-
-  /*tags = flatten([
-    for key in keys(module.labels.tags) :
-    {
-      key                 = key
-      value               = module.labels.tags
-      propagate_at_launch = true
-    }
-  ])*/
-  tag {
-  key                 = module.labels.tags
-  value               = module.labels.tags
-  propagate_at_launch = true
+  dynamic "tag" {
+  for_each = var.tags
+  content {
+    key                 = tag.key
+    value               = tag.value
+    propagate_at_launch = true
+  }
 }
-
-
+  
 
   lifecycle {
     create_before_destroy = true
