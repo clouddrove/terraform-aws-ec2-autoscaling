@@ -12,7 +12,7 @@ updates:
        # Add assignees
     assignees:
       - "clouddrove-ci"
-# Add reviewer
+       # Add reviewer
     reviewers:
       - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
@@ -22,7 +22,7 @@ updates:
        # Add assignees
     assignees:
       - "clouddrove-ci"
-# Add reviewer
+       # Add reviewer
     reviewers:
       - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
@@ -32,6 +32,6 @@ updates:
        # Add assignees
     assignees:
       - "clouddrove-ci"
-# Add reviewer
+       # Add reviewer
     reviewers:
       - "approvers"
