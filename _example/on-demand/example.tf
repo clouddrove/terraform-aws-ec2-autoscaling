@@ -4,12 +4,15 @@ provider "aws" {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "1.3.0"
+  version = "1.3.1"
 
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  key_name        = "devops"
-  environment     = "test"
-  enable_key_pair = true
+  name        = "key"
+  environment = "test"
+  label_order = ["environment", "name"]
+
+  public_key                 = ""
+  create_private_key_enabled = true
+  enable_key_pair            = true
 }
 
 module "vpc" {
