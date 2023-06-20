@@ -4,13 +4,16 @@ provider "aws" {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "1.3.0"
+  version = "1.3.1"
 
-  public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAHpJoH5VN917JHNcDf/C8rA0bSebyRA+WcXtxB8zk9xntliwXU+GpX4WCMcCPLgDkUbbmKInESoH2DFnqgfxyWQaOYZJ2W7/6Aa17qTtrT04FdQel2jdNGjp7BwjHFJxAiSUbDuJPFjZUoEATpryUyT4opAQh7lo/ZwSxrH6wPSGAC0npp/hiJ8/PN2zpFbVJBlHXX96bCGfYQUC013xN54z4HmElGTCtC45SGQ766lmGiIRfxUh/EprjrCQ/u0yOidz1l/eed/CruKss2Vzgd9CnA4tB/3UhsAnEZoTz2Qb4NnWIdHZC8kKIlAumQxLEb/yukofdO0JEGi07LsgwRx1gDcESFzcfnHHNXMybrPU3YrOPI9x22QHt5ufmeZTw3zqI"
-  key_name        = "devops"
-  enable_key_pair = true
-  environment     = "test"
+  name        = "key"
+  environment = "test"
+  label_order = ["environment", "name"]
 
+  public_key                 = ""
+  create_private_key_enabled = true
+  enable_key_pair            = true
+  
 }
 
 module "vpc" {
@@ -110,7 +113,7 @@ module "ec2-autoscale" {
   environment = "test2"
   label_order = ["environment", "name"]
 
-  image_id                  = "ami-0ceab0713d94f9276"
+  image_id                  = "ami-0ab040d0c6b04cf83"
   instance_profile_enabled  = true
   iam_instance_profile_name = module.iam-role.name
 
