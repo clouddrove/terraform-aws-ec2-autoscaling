@@ -17,7 +17,7 @@ module "keypair" {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "1.3.0"
+  version = "1.3.1"
 
   name        = "vpc"
   environment = "test"
@@ -72,7 +72,7 @@ module "iam-role" {
   version = "1.3.0"
 
   name               = "clouddrove"
-  environment        = "test"
+  environment        = "example"
   label_order        = ["name", "environment"]
   assume_role_policy = data.aws_iam_policy_document.default.json
 
