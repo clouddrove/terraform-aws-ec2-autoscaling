@@ -73,7 +73,7 @@ module "ssh" {
     to_port     = 22
     cidr_blocks = [local.vpc_cidr_block, local.additional_cidr_block]
     description = "Allow ssh outbound traffic."
-    }]
+  }]
 }
 
 module "http_https" {
