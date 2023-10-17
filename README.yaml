@@ -15,18 +15,15 @@ github_repo: clouddrove/terraform-aws-ec2-autoscaling
 
 # Badges to display
 badges:
-  - name: "Terraform"
-    image: "https://img.shields.io/badge/Terraform-v1.1.7-green"
-    url: "https://www.terraform.io"
-  - name: "Licence"
-    image: "https://img.shields.io/badge/License-APACHE-blue.svg"
-    url: "LICENSE.md"
+  - name: "Latest Release"
+    image: "https://img.shields.io/github/release/clouddrove/terraform-aws-ec2-autoscaling.svg"
+    url: "https://github.com/clouddrove/terraform-aws-ec2-autoscaling/releases/latest"
   - name: "tfsec"
     image: "https://github.com/clouddrove/terraform-aws-ec2-autoscaling/actions/workflows/tfsec.yml/badge.svg"
     url: "https://github.com/clouddrove/terraform-aws-ec2-autoscaling/actions/workflows/tfsec.yml"
-  - name: "static-checks"
-    image: "https://github.com/clouddrove/terraform-aws-ec2-autoscaling/actions/workflows/terraform.yml/badge.svg"
-    url: "https://github.com/clouddrove/terraform-aws-ec2-autoscaling/actions/workflows/terraform.yml"
+  - name: "Licence"
+    image: "https://img.shields.io/badge/License-APACHE-blue.svg"
+    url: "LICENSE.md"
 #  description of this project
 description: |-
   Terraform module will be created EC2 modulewith Autoscaling group.
@@ -39,39 +36,36 @@ usage: |-
   ###  On_Demand
   ```hcl
     module "ec2-autoscale" {
-      version           = "1.3.0"
-      enabled     = true
-      name        = "ec2"
-      environment = "test"
-       label_order = ["environment", "name"]
+      version                    = "1.3.0"
+      enabled                    = true
+      name                       = "ec2"
+      environment                = "test"
+       label_order               = ["environment", "name"]
        image_id                  = "ami-08bac620dc84221eb"
        iam_instance_profile_name = module.iam-role.name
        user_data_base64          = ""
-
-      instance_type = "t2.nano"
-
-
+      instance_type              = "t2.nano"
+  
       # on_dimand
-      on_demand_enabled = true
-      min_size          = 1
-      desired_capacity  = 1
-      max_size          = 2
+      on_demand_enabled          = true
+      min_size                   = 1
+      desired_capacity           = 1
+      max_size                   = 2
 
       # schedule_instance
-      schedule_enabled = true
+      schedule_enabled           = true
 
       # up
-      scheduler_up     = "0 8 * * MON-FRI"
-      min_size_scaleup = 2
-      scale_up_desired = 2
-      max_size_scaleup = 3
-
+      scheduler_up               = "0 8 * * MON-FRI"
+      min_size_scaleup           = 2
+      scale_up_desired           = 2
+      max_size_scaleup           = 3
 
       # down
-      scheduler_down     = "0 22 * * MON-FRI"
-      min_size_scaledown = 1
-      scale_down_desired = 1
-      max_size_scaledown = 2
+      scheduler_down            = "0 22 * * MON-FRI"
+      min_size_scaledown        = 1
+      scale_down_desired        = 1
+      max_size_scaledown        = 2
 
 
       #volumes
