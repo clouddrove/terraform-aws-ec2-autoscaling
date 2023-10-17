@@ -21,14 +21,8 @@ variable "environment" {
 
 variable "label_order" {
   type        = list(any)
-  default     = []
+  default     = ["environment", "name"]
   description = "Label order, e.g. `name`,`application`."
-}
-
-variable "attributes" {
-  type        = list(any)
-  default     = []
-  description = "Additional attributes (e.g. `1`)."
 }
 
 variable "tags" {
@@ -113,12 +107,6 @@ variable "enable_monitoring" {
   type        = bool
   default     = true
   description = "Enable/disable detailed monitoring."
-}
-
-variable "block_device_mappings" {
-  type        = list(string)
-  default     = []
-  description = "Specify volumes to attach to the instance besides the volumes specified by the AMI."
 }
 
 variable "max_size" {
@@ -273,6 +261,7 @@ variable "scale_down_cooldown_seconds" {
 }
 
 variable "scale_down_scaling_adjustment" {
+  type        = number
   default     = -1
   description = "The number of instances by which to scale. `scale_down_scaling_adjustment` determines the interpretation of this number (e.g. as an absolute number or as a percentage of the existing Auto Scaling group size). A positive increment adds to the current capacity and a negative value removes from the current capacity."
 }

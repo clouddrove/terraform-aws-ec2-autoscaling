@@ -40,7 +40,7 @@ resource "aws_launch_template" "on_demand" {
   }
 
   iam_instance_profile {
-    name = join("", aws_iam_instance_profile.default.*.name)
+    name = join("", aws_iam_instance_profile.default[*].name)
   }
 
   monitoring {
@@ -94,7 +94,7 @@ resource "aws_launch_template" "spot" {
   user_data                            = var.user_data_base64
 
   iam_instance_profile {
-    name = join("", aws_iam_instance_profile.default.*.name)
+    name = join("", aws_iam_instance_profile.default[*].name)
   }
 
   monitoring {
@@ -174,18 +174,18 @@ resource "aws_autoscaling_group" "on_demand" {
   service_linked_role_arn   = var.service_linked_role_arn
 
   launch_template {
-    id      = join("", aws_launch_template.on_demand.*.id)
+    id      = join("", aws_launch_template.on_demand[*].id)
     version = aws_launch_template.on_demand[0].latest_version
   }
 
   dynamic "tag" {
-  for_each = var.tags
-  content {
-    key                 = tag.key
-    value               = tag.value
-    propagate_at_launch = true
+    for_each = var.tags
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
   }
-}
 
   lifecycle {
     create_before_destroy = true
@@ -218,18 +218,18 @@ resource "aws_autoscaling_group" "spot" {
   service_linked_role_arn   = var.service_linked_role_arn
 
   launch_template {
-    id      = join("", aws_launch_template.spot.*.id)
-    version = join("", aws_launch_template.spot.*.latest_version)
+    id      = join("", aws_launch_template.spot[*].id)
+    version = join("", aws_launch_template.spot[*].latest_version)
   }
   dynamic "tag" {
-  for_each = var.tags
-  content {
-    key                 = tag.key
-    value               = tag.value
-    propagate_at_launch = true
+    for_each = var.tags
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
   }
-}
-  
+
 
   lifecycle {
     create_before_destroy = true
