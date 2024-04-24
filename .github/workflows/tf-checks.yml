@@ -8,11 +8,11 @@ jobs:
   tf-checks-on-demand-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.10
     with:
-      working_directory: './_example/on-demand/'
+      working_directory: './examples/on-demand/'
   tf-checks-spot-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.10
     with:
-      working_directory: './_example/spot/'
+      working_directory: './examples/spot/'
 
 
 
