@@ -61,7 +61,7 @@ usage: |-
        iam_instance_profile_name = module.iam-role.name
        user_data_base64          = ""
       instance_type              = "t2.nano"
-  
+
       # on_dimand
       on_demand_enabled          = true
       min_size                   = 1

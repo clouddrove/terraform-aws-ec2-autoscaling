@@ -96,4 +96,3 @@
 | autoscaling\_group\_name | The autoscaling group name |
 | launch\_template\_arn | The ARN of the launch template |
 | launch\_template\_id | The ID of the launch template |
-
