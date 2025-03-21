@@ -153,7 +153,7 @@ resource "aws_autoscaling_schedule" "scaledown" {
   max_size               = var.max_size_scaledown
   desired_capacity       = var.scale_down_desired
   recurrence             = var.scheduler_down
-  time_zone = var.time_zone
+  time_zone              = var.time_zone
 }
 
 #Module      : AWS AUTOSCALING SCHEDULE
@@ -166,7 +166,7 @@ resource "aws_autoscaling_schedule" "scaleup" {
   min_size               = var.min_size_scaleup
   desired_capacity       = var.scale_up_desired
   recurrence             = var.scheduler_up
-  time_zone = var.time_zone
+  time_zone              = var.time_zone
 }
 
 #Module      : AWS AUTOSCALING SCHEDULE
@@ -179,7 +179,7 @@ resource "aws_autoscaling_schedule" "spot_scaledown" {
   max_size               = var.spot_max_size_scaledown
   desired_capacity       = var.spot_scale_down_desired
   recurrence             = var.scheduler_down
-  time_zone = var.time_zone
+  time_zone              = var.time_zone
 }
 
 #Module      : AWS AUTOSCALING SCHEDULE
@@ -192,5 +192,5 @@ resource "aws_autoscaling_schedule" "spot_scaleup" {
   min_size               = var.spot_min_size
   desired_capacity       = var.spot_scale_up_desired
   recurrence             = var.scheduler_up
-  time_zone = var.time_zone
+  time_zone              = var.time_zone
 }
