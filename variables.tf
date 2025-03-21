@@ -470,3 +470,9 @@ variable "spot_desired_capacity" {
   default     = 3
   description = "The number of Amazon EC2 instances that should be running in the group."
 }
+
+variable "time_zone" {
+  type        = string
+  default     = "UTC"
+  description = "Specifies the time zone setting. The default value is 'UTC' (Coordinated Universal Time)."
+}
