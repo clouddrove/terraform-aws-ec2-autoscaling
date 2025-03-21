@@ -76,6 +76,7 @@
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
 | target\_group\_arns | A list of aws\_alb\_target\_group ARNs, for use with Application Load Balancing. | `list(string)` | `[]` | no |
 | termination\_policies | A list of policies to decide how the instances in the auto scale group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `Default`. | `list(string)` | <pre>[<br>  "Default"<br>]</pre> | no |
+| time\_zone | Specifies the time zone setting. The default value is 'UTC' (Coordinated Universal Time). | `string` | `"UTC"` | no |
 | user\_data\_base64 | The Base64-encoded user data to provide when launching the instances. | `string` | `""` | no |
 | volume\_size | The size of ebs volume. | `number` | `100` | no |
 | volume\_type | The type of volume. Can be `standard`, `gp2`, or `io1`. (Default: `standard`). | `string` | `"standard"` | no |
