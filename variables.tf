@@ -476,3 +476,9 @@ variable "time_zone" {
   default     = "UTC"
   description = "Specifies the time zone setting. The default value is 'UTC' (Coordinated Universal Time)."
 }
+
+variable "device_name" {
+  type        = string
+  default     = "/dev/xvda"
+  description = "The name of the block device to be attached to the instance, typically representing the root volume."
+}
