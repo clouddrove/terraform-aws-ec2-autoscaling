@@ -479,6 +479,6 @@ variable "time_zone" {
 
 variable "device_name" {
   type        = string
-  default     = "/dev/xvda"
+  default     = "/dev/sda1"
   description = "The name of the block device to be attached to the instance, typically representing the root volume."
 }
