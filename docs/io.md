@@ -14,6 +14,7 @@
 | default\_cooldown | The amount of time, in seconds, after a scaling activity completes before another scaling activity can start. | `number` | `150` | no |
 | delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
 | desired\_capacity | The number of Amazon EC2 instances that should be running in the group. | `number` | `3` | no |
+| device\_name | The name of the block device to be attached to the instance, typically representing the root volume. | `string` | `"/dev/sda1"` | no |
 | ebs\_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot\_id. | `bool` | `false` | no |
 | enable\_monitoring | Enable/disable detailed monitoring. | `bool` | `true` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
