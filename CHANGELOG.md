@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-04-10
+### :bug: Bug Fixes
+- [`75bdf23`](https://github.com/clouddrove/terraform-aws-ec2-autoscaling/commit/75bdf238bd9ec5243ba53ad614eebab5648e4c83) - device_name *(commit by [@Bhomesh](https://github.com/Bhomesh))*
+
+### :memo: Documentation Changes
+- [`462b8b0`](https://github.com/clouddrove/terraform-aws-ec2-autoscaling/commit/462b8b05c303b4d10114c5a6f5ea430e57817713) - update CHANGELOG.md for 1.3.2 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.3.2] - 2025-03-21
 ### :sparkles: New Features
 - [`87a76c2`](https://github.com/clouddrove/terraform-aws-ec2-autoscaling/commit/87a76c2ff7ba0661b1311d33812ccbffdfccdff2) - add time_zone in aws_autoscaling_schedule *(PR [#61](https://github.com/clouddrove/terraform-aws-ec2-autoscaling/pull/61) by [@Bhomesh](https://github.com/Bhomesh))*
@@ -77,3 +85,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.12.0]:https://github.com/clouddrove/terraform-aws-ec2-autoscaling/compare/0.12.0...master
 [1.3.1]: https://github.com/clouddrove/terraform-aws-ec2-autoscaling/compare/1.3.0...1.3.1
 [1.3.2]: https://github.com/clouddrove/terraform-aws-ec2-autoscaling/compare/1.3.1...1.3.2
+[1.3.3]: https://github.com/clouddrove/terraform-aws-ec2-autoscaling/compare/1.3.2...1.3.3
