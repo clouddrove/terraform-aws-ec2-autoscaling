@@ -163,15 +163,15 @@ data "aws_iam_policy_document" "iam-policy" {
 module "ec2-autoscale" {
   source = "../../"
 
-  enabled     = true
-  name        = "${local.name}-test"
-  environment = local.environment
-  enable_autoscaling_schedule_spot_scale_up = true
-  enable_autoscaling_schedule_spot_scale_down = true
-  aws_cloudwatch_metric_alarm_enabled_cpu_low_spot = true
+  enabled                                           = true
+  name                                              = "${local.name}-test"
+  environment                                       = local.environment
+  enable_autoscaling_schedule_spot_scale_up         = true
+  enable_autoscaling_schedule_spot_scale_down       = true
+  aws_cloudwatch_metric_alarm_enabled_cpu_low_spot  = true
   aws_cloudwatch_metric_alarm_enabled_cpu_high_spot = true
-  aws_autoscaling_policy_scale_down_spot = true
-  aws_autoscaling_policy_scale_up_spot = true
+  aws_autoscaling_policy_scale_down_spot            = true
+  aws_autoscaling_policy_scale_up_spot              = true
 
   #Launch template
   image_id                  = "ami-08bac620dc84221eb"
