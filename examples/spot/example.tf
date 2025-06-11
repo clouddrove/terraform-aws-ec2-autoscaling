@@ -168,12 +168,18 @@ data "aws_iam_policy_document" "iam-policy" {
 module "ec2-autoscale" {
   source = "../../"
 
-  enabled                   = true
-  name                      = "${local.name}-test"
-  environment               = local.environment
-  image_id                  = "ami-0ab040d0c6b04cf83"
-  instance_profile_enabled  = true
-  iam_instance_profile_name = module.iam-role.name
+  enabled                                           = true
+  name                                              = "${local.name}-test"
+  environment                                       = local.environment
+  image_id                                          = "ami-0ab040d0c6b04cf83"
+  instance_profile_enabled                          = true
+  iam_instance_profile_name                         = module.iam-role.name
+  enable_autoscaling_schedule_spot_scale_up         = true
+  enable_autoscaling_schedule_spot_scale_down       = true
+  aws_cloudwatch_metric_alarm_enabled_cpu_low_spot  = true
+  aws_cloudwatch_metric_alarm_enabled_cpu_high_spot = true
+  aws_autoscaling_policy_scale_down_spot            = true
+  aws_autoscaling_policy_scale_up_spot              = true
 
   security_group_ids = [module.ssh.security_group_id, module.http_https.security_group_id]
   user_data_base64   = ""
