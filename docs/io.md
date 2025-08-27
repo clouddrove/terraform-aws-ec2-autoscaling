@@ -3,6 +3,14 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | associate\_public\_ip\_address | Associate a public IP address with an instance in a VPC. | `bool` | `false` | no |
+| aws\_autoscaling\_policy\_scale\_down | Whether to create the scale down autoscaling policy. | `bool` | `true` | no |
+| aws\_autoscaling\_policy\_scale\_down\_spot | Whether to create the scale down autoscaling policy for spot instances. | `bool` | `true` | no |
+| aws\_autoscaling\_policy\_scale\_up | Whether to create the scale up autoscaling policy. | `bool` | `true` | no |
+| aws\_autoscaling\_policy\_scale\_up\_spot | Whether to create the scale up autoscaling policy for spot instances. | `bool` | `true` | no |
+| aws\_cloudwatch\_metric\_alarm\_enabled\_cpu\_high | Whether to create the CloudWatch metric alarm for high CPU utilization. | `bool` | `true` | no |
+| aws\_cloudwatch\_metric\_alarm\_enabled\_cpu\_high\_spot | Whether to create the CloudWatch metric alarm for high CPU utilization for spot instances. | `bool` | `true` | no |
+| aws\_cloudwatch\_metric\_alarm\_enabled\_cpu\_low | Whether to create the CloudWatch metric alarm for low CPU utilization. | `bool` | `true` | no |
+| aws\_cloudwatch\_metric\_alarm\_enabled\_cpu\_low\_spot | Whether to create the CloudWatch metric alarm for low CPU utilization for spot instances. | `bool` | `true` | no |
 | cpu\_utilization\_high\_evaluation\_periods | The number of periods over which data is compared to the specified threshold. | `number` | `2` | no |
 | cpu\_utilization\_high\_period\_seconds | The period in seconds over which the specified statistic is applied. | `number` | `300` | no |
 | cpu\_utilization\_high\_statistic | The statistic to apply to the alarm's associated metric. Either of the following is supported: `SampleCount`, `Average`, `Sum`, `Minimum`, `Maximum`. | `string` | `"Average"` | no |
@@ -16,6 +24,10 @@
 | desired\_capacity | The number of Amazon EC2 instances that should be running in the group. | `number` | `3` | no |
 | device\_name | The name of the block device to be attached to the instance, typically representing the root volume. | `string` | `"/dev/sda1"` | no |
 | ebs\_encryption | Enables EBS encryption on the volume (Default: false). Cannot be used with snapshot\_id. | `bool` | `false` | no |
+| enable\_autoscaling\_schedule\_scale\_down | Whether to enable the autoscaling schedule for scale down operations. | `bool` | `true` | no |
+| enable\_autoscaling\_schedule\_scale\_up | Whether to enable the autoscaling schedule for scale up operations. | `bool` | `true` | no |
+| enable\_autoscaling\_schedule\_spot\_scale\_down | Whether to enable the autoscaling schedule for scale down operations for spot instances. | `bool` | `true` | no |
+| enable\_autoscaling\_schedule\_spot\_scale\_up | Whether to enable the autoscaling schedule for scale up operations for spot instances. | `bool` | `true` | no |
 | enable\_monitoring | Enable/disable detailed monitoring. | `bool` | `true` | no |
 | enabled | Whether to create the resources. Set to `false` to prevent the module from creating any resources. | `bool` | `true` | no |
 | enabled\_metrics | A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`, `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`. | `list(string)` | <pre>[<br>  "GroupMinSize",<br>  "GroupMaxSize",<br>  "GroupDesiredCapacity",<br>  "GroupInServiceInstances",<br>  "GroupPendingInstances",<br>  "GroupStandbyInstances",<br>  "GroupTerminatingInstances",<br>  "GroupTotalInstances"<br>]</pre> | no |
