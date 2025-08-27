@@ -8,7 +8,7 @@ locals {
 #Module      : AUTOSCALING POLICY UP
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up" {
-  count                  = local.autoscaling_enabled ? 1 : 0
+  count                  = local.autoscaling_enabled && var.aws_autoscaling_policy_scale_up ? 1 : 0
   name                   = format("%s%sscale%sup", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_up_scaling_adjustment
   adjustment_type        = var.scale_up_adjustment_type
@@ -20,20 +20,20 @@ resource "aws_autoscaling_policy" "scale_up" {
 #Module      : AUTOSCALING POLICY UP
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_up_spot" {
-  count                  = local.spot_autoscaling_enabled ? 1 : 0
+  count                  = local.spot_autoscaling_enabled && var.aws_autoscaling_policy_scale_up_spot ? 1 : 0
   name                   = format("%s%sscale%sup-spot", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_up_scaling_adjustment
   adjustment_type        = var.scale_up_adjustment_type
   policy_type            = var.scale_up_policy_type
   cooldown               = var.scale_up_cooldown_seconds
   autoscaling_group_name = join("", aws_autoscaling_group.spot[*].name)
-
 }
+
 
 #Module      : AUTOSCALING POLICY DOWN
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down" {
-  count                  = local.autoscaling_enabled ? 1 : 0
+  count                  = local.autoscaling_enabled && var.aws_autoscaling_policy_scale_down ? 1 : 0
   name                   = format("%s%sscale%sdown", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_down_scaling_adjustment
   adjustment_type        = var.scale_down_adjustment_type
@@ -45,7 +45,7 @@ resource "aws_autoscaling_policy" "scale_down" {
 #Module      : AUTOSCALING POLICY DOWN
 #Description : Provides an AutoScaling Scaling Policy resource.
 resource "aws_autoscaling_policy" "scale_down_spot" {
-  count                  = local.spot_autoscaling_enabled ? 1 : 0
+  count                  = local.spot_autoscaling_enabled && var.aws_autoscaling_policy_scale_down_spot ? 1 : 0
   name                   = format("%s%sscale%sdown-spot", module.labels.id, var.delimiter, var.delimiter)
   scaling_adjustment     = var.scale_down_scaling_adjustment
   adjustment_type        = var.scale_down_adjustment_type
@@ -57,7 +57,7 @@ resource "aws_autoscaling_policy" "scale_down_spot" {
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  count      = local.autoscaling_enabled ? 1 : 0
+  count      = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high ? 1 : 0
   alarm_name = format("%s%scpu%sutilization%shigh", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
 
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -79,7 +79,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high_spot" {
-  count      = local.spot_autoscaling_enabled ? 1 : 0
+  count      = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high_spot ? 1 : 0
   alarm_name = format("%s%scpu%sutilization%shigh-spot", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
 
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -102,7 +102,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high_spot" {
 #Module      : CLOUDWATCH METRIC ALARM CPU LOW
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  count               = local.autoscaling_enabled ? 1 : 0
+  count               = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low ? 1 : 0
   alarm_name          = format("%s%scpu%sutilization%slow", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
 #Module      : CLOUDWATCH METRIC ALARM CPU LOW
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
-  count               = local.spot_autoscaling_enabled ? 1 : 0
+  count               = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low_spot ? 1 : 0
   alarm_name          = format("%s%scpu%sutilization%slow-spot", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
@@ -146,7 +146,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
 #Module      : AWS AUTOSCALING SCHEDULE
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "scaledown" {
-  count                  = local.autoscaling_enabled_schedule ? 1 : 0
+  count                  = local.autoscaling_enabled_schedule && var.enable_autoscaling_schedule_scale_down ? 1 : 0
   autoscaling_group_name = join("", aws_autoscaling_group.on_demand[*].name)
   scheduled_action_name  = format("%s-scheduler-down", module.labels.id)
   min_size               = var.min_size_scaledown
@@ -159,7 +159,7 @@ resource "aws_autoscaling_schedule" "scaledown" {
 #Module      : AWS AUTOSCALING SCHEDULE
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "scaleup" {
-  count                  = local.autoscaling_enabled_schedule ? 1 : 0
+  count                  = local.autoscaling_enabled_schedule && var.enable_autoscaling_schedule_scale_up ? 1 : 0
   autoscaling_group_name = join("", aws_autoscaling_group.on_demand[*].name)
   scheduled_action_name  = format("%s-scheduler-up", module.labels.id)
   max_size               = var.max_size_scaleup
@@ -172,7 +172,7 @@ resource "aws_autoscaling_schedule" "scaleup" {
 #Module      : AWS AUTOSCALING SCHEDULE
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "spot_scaledown" {
-  count                  = local.autoscaling_enabled_spot_schedule ? 1 : 0
+  count                  = var.enabled && var.spot_enabled && var.enable_autoscaling_schedule_spot_scale_down ? 1 : 0
   autoscaling_group_name = join("", aws_autoscaling_group.spot[*].name)
   scheduled_action_name  = format("spot-%s-scheduler-down", module.labels.id)
   min_size               = var.spot_min_size_scaledown
@@ -185,7 +185,7 @@ resource "aws_autoscaling_schedule" "spot_scaledown" {
 #Module      : AWS AUTOSCALING SCHEDULE
 #Description : Provides an AutoScaling Schedule resource.
 resource "aws_autoscaling_schedule" "spot_scaleup" {
-  count                  = local.autoscaling_enabled_spot_schedule ? 1 : 0
+  count                  = var.enabled && var.spot_enabled && var.enable_autoscaling_schedule_spot_scale_up ? 1 : 0
   autoscaling_group_name = join("", aws_autoscaling_group.spot[*].name)
   scheduled_action_name  = format("spot-%s-scheduler-up", module.labels.id)
   max_size               = var.spot_max_size

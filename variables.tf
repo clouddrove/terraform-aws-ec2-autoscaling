@@ -482,3 +482,84 @@ variable "device_name" {
   default     = "/dev/sda1"
   description = "The name of the block device to be attached to the instance, typically representing the root volume."
 }
+
+variable "aws_autoscaling_policy_scale_up" {
+  type        = bool
+  default     = true
+  description = "Whether to create the scale up autoscaling policy."
+
+}
+
+variable "aws_autoscaling_policy_scale_up_spot" {
+  type        = bool
+  default     = true
+  description = "Whether to create the scale up autoscaling policy for spot instances."
+
+}
+
+variable "aws_autoscaling_policy_scale_down" {
+  type        = bool
+  default     = true
+  description = "Whether to create the scale down autoscaling policy."
+
+}
+
+variable "aws_autoscaling_policy_scale_down_spot" {
+  type        = bool
+  default     = true
+  description = "Whether to create the scale down autoscaling policy for spot instances."
+
+}
+
+variable "aws_cloudwatch_metric_alarm_enabled_cpu_high" {
+  type        = bool
+  default     = true
+  description = "Whether to create the CloudWatch metric alarm for high CPU utilization."
+
+}
+
+variable "aws_cloudwatch_metric_alarm_enabled_cpu_high_spot" {
+  type        = bool
+  default     = true
+  description = "Whether to create the CloudWatch metric alarm for high CPU utilization for spot instances."
+
+}
+
+variable "aws_cloudwatch_metric_alarm_enabled_cpu_low" {
+  type        = bool
+  default     = true
+  description = "Whether to create the CloudWatch metric alarm for low CPU utilization."
+
+}
+
+variable "aws_cloudwatch_metric_alarm_enabled_cpu_low_spot" {
+  type        = bool
+  default     = true
+  description = "Whether to create the CloudWatch metric alarm for low CPU utilization for spot instances."
+
+}
+
+variable "enable_autoscaling_schedule_scale_down" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the autoscaling schedule for scale down operations."
+
+}
+variable "enable_autoscaling_schedule_scale_up" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the autoscaling schedule for scale up operations."
+
+}
+variable "enable_autoscaling_schedule_spot_scale_down" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the autoscaling schedule for scale down operations for spot instances."
+
+}
+variable "enable_autoscaling_schedule_spot_scale_up" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the autoscaling schedule for scale up operations for spot instances."
+
+}
