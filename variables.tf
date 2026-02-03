@@ -6,6 +6,11 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
+variable "extra_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
+}
 
 variable "repository" {
   type        = string
@@ -27,7 +32,10 @@ variable "label_order" {
 
 variable "tags" {
   type        = map(any)
-  default     = {}
+  default     = {
+    environment = "test"
+    Name        = "test" 
+  }
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
@@ -93,7 +101,7 @@ variable "associate_public_ip_address" {
 
 variable "instance_profile_enabled" {
   type        = bool
-  default     = true
+  default     = false 
   description = "Associate a public IP address with an instance in a VPC."
 }
 
@@ -105,7 +113,7 @@ variable "user_data_base64" {
 
 variable "enable_monitoring" {
   type        = bool
-  default     = true
+  default     = false 
   description = "Enable/disable detailed monitoring."
 }
 

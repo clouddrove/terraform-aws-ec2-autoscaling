@@ -55,3 +55,9 @@ output "autoscaling_group_health_check_type" {
   description = "`EC2` or `ELB`. Controls how health checking is done"
   value       = join("", aws_autoscaling_group.on_demand[*].health_check_type)
 }
+
+
+output "tags" {
+  description = "value"
+  value = aws_autoscaling_group.on_demand[*].tag
+}
