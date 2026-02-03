@@ -164,7 +164,7 @@ module "http_https" {
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [local.vpc_cidr_block]
     description = "Allow ssh traffic."
     }
   ]
