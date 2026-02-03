@@ -35,7 +35,7 @@ module "ec2-autoscale" {
   source = "../../../"
 
   enabled     = true
-  name        = "${local.name}-test-vineetfab3"
+  name        = "${local.name}-test"
   environment = local.environment
   label_order = local.label_order
 
