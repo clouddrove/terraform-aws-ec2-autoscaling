@@ -59,5 +59,5 @@ output "autoscaling_group_health_check_type" {
 
 output "tags" {
   description = "value"
-  value = aws_autoscaling_group.on_demand[*].tag
+  value       = aws_autoscaling_group.on_demand[*].tag
 }

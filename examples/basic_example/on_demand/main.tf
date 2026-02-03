@@ -2,13 +2,70 @@ provider "aws" {
   region = local.region
 }
 
+
 locals {
   name                  = "ec2-autoscaling"
   region                = "us-east-1"
+  environment           = "test"
+  label_order           = ["environment", "name"]
+  
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
-  environment           = "test"
+  os_name               = "ubuntu"
+  architecture_type     = "x86_64"
 }
+
+data "aws_ami" "any" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["*${local.os_name}*"]
+  }
+  filter {
+    name   = "architecture"
+    values = [local.architecture_type]
+  }
+}
+
+##----------------------------------------------------
+## AWS Security Group Module 
+##----------------------------------------------------
+module "ec2-autoscale" {
+  source = "../../../"
+
+  enabled     = true
+  name        = "${local.name}-test-vineetfab3"
+  environment = local.environment
+  label_order = local.label_order
+
+  #Launch template
+  instance_profile_enabled  = true
+  iam_instance_profile_name = module.iam-role.name
+  image_id                  = data.aws_ami.any.id
+  instance_type             = "t2.nano"
+
+
+  # on_dimand
+  on_demand_enabled = true
+  min_size          = 1
+  desired_capacity  = 1
+  max_size          = 1
+
+  #volumes
+  volume_type = "standard"
+  volume_size = 30
+
+  #Network
+  associate_public_ip_address = true
+  key_name                    = module.keypair.name
+  subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
+  security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
+}
+
+##----------------------------------------------------
+## AWS KeyPair Module 
+##----------------------------------------------------
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
@@ -16,10 +73,16 @@ module "keypair" {
 
   name                       = "${local.name}-key"
   environment                = local.environment
+  label_order                = local.label_order
+
   public_key                 = ""
   create_private_key_enabled = true
   enable_key_pair            = true
 }
+
+##----------------------------------------------------
+## AWS VPC Module 
+##----------------------------------------------------
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
@@ -27,8 +90,13 @@ module "vpc" {
 
   name        = "${local.name}-vpc"
   environment = local.environment
+  label_order = local.label_order
   cidr_block  = "10.0.0.0/16"
 }
+
+##----------------------------------------------------
+## AWS Subnet Module 
+##----------------------------------------------------
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
@@ -36,6 +104,8 @@ module "public_subnets" {
 
   name               = "${local.name}-subnet"
   environment        = local.environment
+  label_order        = local.label_order
+
   availability_zones = ["${local.region}b", "${local.region}c"]
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
@@ -44,9 +114,9 @@ module "public_subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
-# ################################################################################
-# Security Groups module call
-################################################################################
+##----------------------------------------------------
+## AWS Security Group Module 
+##----------------------------------------------------
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
@@ -54,6 +124,8 @@ module "ssh" {
 
   name        = "${local.name}-ssh"
   environment = local.environment
+  label_order = local.label_order
+  
   vpc_id      = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -83,6 +155,7 @@ module "http_https" {
 
   name        = "${local.name}-http-https"
   environment = local.environment
+  label_order = local.label_order
 
   vpc_id = module.vpc.vpc_id
   ## INGRESS Rules
@@ -91,24 +164,8 @@ module "http_https" {
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
-    cidr_blocks = [local.vpc_cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
     description = "Allow ssh traffic."
-    },
-    {
-      rule_count  = 2
-      from_port   = 80
-      protocol    = "tcp"
-      to_port     = 80
-      cidr_blocks = [local.vpc_cidr_block]
-      description = "Allow http traffic."
-    },
-    {
-      rule_count  = 3
-      from_port   = 443
-      protocol    = "tcp"
-      to_port     = 443
-      cidr_blocks = [local.vpc_cidr_block]
-      description = "Allow https traffic."
     }
   ]
 
@@ -125,42 +182,45 @@ module "http_https" {
   ]
 }
 
+##----------------------------------------------------
+## AWS IAM Role Module 
+##----------------------------------------------------
 
-module "ec2-autoscale" {
-  source = "../../../"
+module "iam-role" {
+  source  = "clouddrove/iam-role/aws"
+  version = "1.3.3"
 
-  enabled     = true
-  name        = "${local.name}-test-vineetfab3"
+  name        = "${local.name}-iam-role"
   environment = local.environment
+  label_order = local.label_order
 
-  #Launch template
-  image_id                  = "ami-0532be01f26a3de55"
-  instance_type             = "t2.nano"
-
-  # on_dimand
-  on_demand_enabled = true
-  min_size          = 1
-  desired_capacity  = 1
-  max_size          = 2
-  
-  #volumes
-  volume_type    = "standard"
-  volume_size    = 30
-
-  #Network
-  associate_public_ip_address = true
-  key_name                    = module.keypair.name
-  subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-  security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
-
-
-  cpu_utilization_high_evaluation_periods = 2
-  cpu_utilization_high_period_seconds     = 300
-  cpu_utilization_high_threshold_percent  = 10
-  cpu_utilization_high_statistic          = "Average"
-  cpu_utilization_low_evaluation_periods  = 2
-  cpu_utilization_low_period_seconds      = 180
-  cpu_utilization_low_statistic           = "Average"
-  cpu_utilization_low_threshold_percent   = 1
-
+  assume_role_policy = data.aws_iam_policy_document.default.json
+  policy_enabled     = true
+  policy             = data.aws_iam_policy_document.iam-policy.json
 }
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+

@@ -223,6 +223,10 @@ module "ec2-autoscale" {
   protect_from_scale_in                = false
   service_linked_role_arn              = ""
 
+
+  aws_autoscaling_policy_scale_up   = true
+  aws_autoscaling_policy_scale_down = true
+
   scale_up_cooldown_seconds     = 150
   scale_up_scaling_adjustment   = 1
   scale_up_adjustment_type      = "ChangeInCapacity"
@@ -231,6 +235,10 @@ module "ec2-autoscale" {
   scale_down_scaling_adjustment = -1
   scale_down_adjustment_type    = "ChangeInCapacity"
   scale_down_policy_type        = "SimpleScaling"
+
+
+  aws_cloudwatch_metric_alarm_enabled_cpu_high = true
+  aws_cloudwatch_metric_alarm_enabled_cpu_low  = true
 
   cpu_utilization_high_evaluation_periods = 2
   cpu_utilization_high_period_seconds     = 300
