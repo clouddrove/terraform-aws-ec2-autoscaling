@@ -31,8 +31,8 @@ variable "label_order" {
 }
 
 variable "tags" {
-  type = map(any)
-  default = {}
+  type        = map(any)
+  default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
