@@ -10,5 +10,5 @@ output "autoscaling_group_arn" {
 
 output "autoscaling_tags" {
   description = "tags"
-  value       = module.ec2-autoscale[*].tags
+  value       = module.ec2-autoscale[*].on_demand[*].tag
 }
