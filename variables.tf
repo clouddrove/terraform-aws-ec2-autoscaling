@@ -32,10 +32,7 @@ variable "label_order" {
 
 variable "tags" {
   type = map(any)
-  default = {
-    environment = "test"
-    Name        = "test"
-  }
+  default = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
