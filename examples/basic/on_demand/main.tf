@@ -4,11 +4,11 @@ provider "aws" {
 
 
 locals {
-  name                  = "ec2-autoscaling"
-  region                = "us-east-1"
-  environment           = "test"
-  label_order           = ["environment", "name"]
-  
+  name        = "ec2-autoscaling"
+  region      = "us-east-1"
+  environment = "test"
+  label_order = ["environment", "name"]
+
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   os_name               = "ubuntu"
@@ -71,9 +71,9 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.1"
 
-  name                       = "${local.name}-key"
-  environment                = local.environment
-  label_order                = local.label_order
+  name        = "${local.name}-key"
+  environment = local.environment
+  label_order = local.label_order
 
   public_key                 = ""
   create_private_key_enabled = true
@@ -102,16 +102,39 @@ module "public_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.1"
 
-  name               = "${local.name}-subnet"
-  environment        = local.environment
-  label_order        = local.label_order
+  name        = "${local.name}-subnet"
+  environment = local.environment
+  label_order = local.label_order
 
-  availability_zones = ["${local.region}b", "${local.region}c"]
-  vpc_id             = module.vpc.vpc_id
-  cidr_block         = module.vpc.vpc_cidr_block
-  type               = "public"
-  igw_id             = module.vpc.igw_id
-  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
+  nat_gateway_enabled = true
+  single_nat_gateway  = true
+  availability_zones  = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  vpc_id              = module.vpc.vpc_id
+  cidr_block          = module.vpc.vpc_cidr_block
+  type                = "public-private"
+  igw_id              = module.vpc.igw_id
+  ipv6_cidr_block     = module.vpc.ipv6_cidr_block
+
+  private_inbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = module.vpc.vpc_cidr_block
+    }
+  ]
+  private_outbound_acl_rules = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = module.vpc.vpc_cidr_block
+    }
+  ]
 }
 
 ##----------------------------------------------------
@@ -125,8 +148,8 @@ module "ssh" {
   name        = "${local.name}-ssh"
   environment = local.environment
   label_order = local.label_order
-  
-  vpc_id      = module.vpc.vpc_id
+
+  vpc_id = module.vpc.vpc_id
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
     from_port   = 22
@@ -164,20 +187,19 @@ module "http_https" {
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
-    cidr_blocks = [local.vpc_cidr_block]
+    cidr_blocks = [module.vpc.vpc_cidr_block]
     description = "Allow ssh traffic."
     }
   ]
 
   ## EGRESS Rules
   new_sg_egress_rules_with_cidr_blocks = [{
-    rule_count       = 1
-    from_port        = 0
-    protocol         = "-1"
-    to_port          = 0
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-    description      = "Allow all traffic."
+    rule_count  = 1
+    from_port   = 0
+    protocol    = "-1"
+    to_port     = 0
+    cidr_blocks = [module.vpc.vpc_cidr_block]
+    description = "Allow all traffic."
     }
   ]
 }
