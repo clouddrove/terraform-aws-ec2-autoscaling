@@ -9,10 +9,12 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/on-demand/'
+      provider: none
   tf-checks-spot-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/spot/'
+      provider: none
 
 
 
