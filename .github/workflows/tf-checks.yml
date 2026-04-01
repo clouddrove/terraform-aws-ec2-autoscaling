@@ -12,6 +12,7 @@ jobs:
       working_directory: './examples/complete/on-demand/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-spot-example:
@@ -21,6 +22,7 @@ jobs:
       working_directory: './examples/complete/spot/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-basic-on-demand-example:
@@ -30,6 +32,7 @@ jobs:
       working_directory: './examples/basic/on-demand/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
 
