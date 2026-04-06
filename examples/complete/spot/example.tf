@@ -14,11 +14,14 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.1"
 
-  name                       = "${local.name}-key"
-  environment                = local.environment
+  name        = "${local.name}-key"
+  environment = local.environment
+  label_order = ["environment", "name"]
+
   public_key                 = ""
   create_private_key_enabled = true
   enable_key_pair            = true
+
 }
 
 module "vpc" {
@@ -27,6 +30,7 @@ module "vpc" {
 
   name        = "${local.name}-vpc"
   environment = local.environment
+  label_order = ["environment", "name"]
   cidr_block  = "10.0.0.0/16"
 }
 
@@ -73,7 +77,8 @@ module "ssh" {
     to_port     = 22
     cidr_blocks = [local.vpc_cidr_block, local.additional_cidr_block]
     description = "Allow ssh outbound traffic."
-  }]
+    }
+  ]
 }
 
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
@@ -83,8 +88,7 @@ module "http_https" {
 
   name        = "${local.name}-http-https"
   environment = local.environment
-
-  vpc_id = module.vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules_with_cidr_blocks = [{
     rule_count  = 1
@@ -132,8 +136,9 @@ module "iam-role" {
   name               = "${local.name}-iam-role"
   environment        = local.environment
   assume_role_policy = data.aws_iam_policy_document.default.json
-  policy_enabled     = true
-  policy             = data.aws_iam_policy_document.iam-policy.json
+
+  policy_enabled = true
+  policy         = data.aws_iam_policy_document.iam-policy.json
 }
 
 data "aws_iam_policy_document" "default" {
@@ -161,77 +166,61 @@ data "aws_iam_policy_document" "iam-policy" {
 }
 
 module "ec2-autoscale" {
-  source = "../../"
+  source = "../../../"
 
-  enabled     = true
-  name        = "${local.name}-test"
-  environment = local.environment
-
-  #Launch template
-  image_id                  = "ami-08bac620dc84221eb"
+  enabled                   = true
+  name                      = "${local.name}-test"
+  environment               = local.environment
+  image_id                  = "ami-0ab040d0c6b04cf83"
   instance_profile_enabled  = true
   iam_instance_profile_name = module.iam-role.name
-  user_data_base64          = ""
-  instance_type             = "t2.nano"
 
-  # on_dimand
-  on_demand_enabled = true
-  min_size          = 1
-  desired_capacity  = 1
-  max_size          = 2
+  security_group_ids = [module.ssh.security_group_id, module.http_https.security_group_id]
+  user_data_base64   = ""
 
-  # schedule_instance
-  schedule_enabled = true
-
-  # up
-  scheduler_up     = "0 8 * * MON-FRI"
-  min_size_scaleup = 2
-  scale_up_desired = 2
-  max_size_scaleup = 3
-
-  # down
-  scheduler_down     = "0 22 * * MON-FRI"
-  min_size_scaledown = 1
-  scale_down_desired = 1
-  max_size_scaledown = 2
-
-  #volumes
-  volume_type    = "standard"
-  ebs_encryption = false
-  kms_key_arn    = ""
-  volume_size    = 20
-
-  #Network
-  associate_public_ip_address = true
-  key_name                    = module.keypair.name
-  subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-  load_balancers              = []
-  security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
-  min_elb_capacity            = 0
-  target_group_arns           = []
-  health_check_type           = "EC2"
-
-  instance_initiated_shutdown_behavior = "terminate"
-  enable_monitoring                    = true
-  default_cooldown                     = 150
-  force_delete                         = false
-  termination_policies                 = ["Default"]
-  suspended_processes                  = []
-  enabled_metrics                      = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
-  metrics_granularity                  = "1Minute"
-  wait_for_capacity_timeout            = "15m"
-  protect_from_scale_in                = false
-  service_linked_role_arn              = ""
-
-  scale_up_cooldown_seconds     = 150
-  scale_up_scaling_adjustment   = 1
-  scale_up_adjustment_type      = "ChangeInCapacity"
-  scale_up_policy_type          = "SimpleScaling"
-  scale_down_cooldown_seconds   = 300
-  scale_down_scaling_adjustment = -1
-  scale_down_adjustment_type    = "ChangeInCapacity"
-  scale_down_policy_type        = "SimpleScaling"
-
+  subnet_ids                              = tolist(module.public_subnets.public_subnet_id)
+  spot_max_size                           = 3
+  spot_min_size                           = 1
+  spot_desired_capacity                   = 1
+  spot_enabled                            = true
+  on_demand_enabled                       = false
+  scheduler_down                          = "0 19 * * MON-FRI"
+  scheduler_up                            = "0 6 * * MON-FRI"
+  spot_min_size_scaledown                 = 1
+  spot_max_size_scaledown                 = 1
+  spot_schedule_enabled                   = false
+  spot_scale_down_desired                 = 1
+  spot_scale_up_desired                   = 2
+  max_price                               = "0.20"
+  volume_size                             = 20
+  ebs_encryption                          = false
+  kms_key_arn                             = ""
+  volume_type                             = "standard"
+  spot_instance_type                      = "m5.large"
+  associate_public_ip_address             = true
+  instance_initiated_shutdown_behavior    = "terminate"
+  key_name                                = module.keypair.name
+  enable_monitoring                       = true
+  load_balancers                          = []
+  health_check_type                       = "EC2"
+  target_group_arns                       = []
+  default_cooldown                        = 150
+  force_delete                            = false
+  termination_policies                    = ["Default"]
+  suspended_processes                     = []
+  enabled_metrics                         = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
+  metrics_granularity                     = "1Minute"
+  wait_for_capacity_timeout               = "5m"
+  protect_from_scale_in                   = false
+  service_linked_role_arn                 = ""
+  scale_up_cooldown_seconds               = 150
+  scale_up_scaling_adjustment             = 1
+  scale_up_adjustment_type                = "ChangeInCapacity"
+  scale_up_policy_type                    = "SimpleScaling"
+  scale_down_cooldown_seconds             = 300
+  scale_down_scaling_adjustment           = -1
+  scale_down_adjustment_type              = "ChangeInCapacity"
+  scale_down_policy_type                  = "SimpleScaling"
   cpu_utilization_high_evaluation_periods = 2
   cpu_utilization_high_period_seconds     = 300
   cpu_utilization_high_threshold_percent  = 10
