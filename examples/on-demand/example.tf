@@ -127,7 +127,7 @@ module "http_https" {
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "1.3.4"
+  version = "1.3.5"
 
   name               = "${local.name}-iam-role"
   environment        = local.environment
