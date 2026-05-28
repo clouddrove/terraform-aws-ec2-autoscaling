@@ -10,6 +10,6 @@ terraform {
   }
 
   provider_meta "aws" {
-    module_name = "clouddrove/terraform-aws-ec2-autoscaling"
+    user_agent = ["github.com/clouddrove/terraform-aws-ec2-autoscaling"]
   }
 }

@@ -12,7 +12,7 @@ locals {
 
 module "keypair" {
   source  = "clouddrove/keypair/aws"
-  version = "1.3.1"
+  version = "1.3.4"
 
   name                       = "${local.name}-key"
   environment                = local.environment
@@ -23,7 +23,7 @@ module "keypair" {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
   name        = "${local.name}-vpc"
   environment = local.environment
@@ -32,7 +32,7 @@ module "vpc" {
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.2"
 
   name               = "${local.name}-subnet"
   environment        = local.environment
@@ -50,7 +50,7 @@ module "public_subnets" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "2.0.0"
+  version = "2.0.2"
 
   name        = "${local.name}-ssh"
   environment = local.environment
@@ -79,7 +79,7 @@ module "ssh" {
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 module "http_https" {
   source  = "clouddrove/security-group/aws"
-  version = "2.0.0"
+  version = "2.0.2"
 
   name        = "${local.name}-http-https"
   environment = local.environment
@@ -127,7 +127,7 @@ module "http_https" {
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "1.3.3"
+  version = "1.3.5"
 
   name               = "${local.name}-iam-role"
   environment        = local.environment
