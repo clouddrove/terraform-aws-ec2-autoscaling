@@ -35,5 +35,14 @@ jobs:
         run: pip install pre-commit
 
       - name: Run pre-commit
-        run: SKIP=terraform_validate,terraform_tflint pre-commit run -a --show-diff-on-failure || true
+        # No trailing `|| true`: this job installed Terraform, TFLint and
+        # terraform-docs and then could not fail, so three real hook failures sat
+        # on master unnoticed, including a tflint warning that turned out to be a
+        # genuine bug in spot_schedule_enabled.
+        #
+        # terraform_tflint stays skipped for now. It still reports
+        # terraform_standard_module_structure against the examples, which use
+        # example.tf rather than main.tf by CloudDrove convention. That is a
+        # convention decision, not a defect, and belongs in its own change.
+        run: SKIP=terraform_tflint pre-commit run -a --show-diff-on-failure
 ...
