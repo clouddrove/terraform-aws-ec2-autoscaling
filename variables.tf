@@ -455,8 +455,8 @@ variable "schedule_enabled" {
 
 variable "spot_schedule_enabled" {
   type        = bool
-  default     = false
-  description = "AutoScaling Schedule resource for spot"
+  default     = true
+  description = "Whether to create the AutoScaling Schedule resources for spot instances. Mirrors schedule_enabled on the on-demand path."
 }
 
 variable "desired_capacity" {
