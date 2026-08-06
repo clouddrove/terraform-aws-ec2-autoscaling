@@ -14,11 +14,11 @@ module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.4"
 
-  name                       = "${local.name}-key"
-  environment                = local.environment
-  public_key                 = ""
-  create_private_key_enabled = true
-  enable_key_pair            = true
+  name               = "${local.name}-key"
+  environment        = local.environment
+  public_key         = ""
+  enable_private_key = true
+  enable_key_pair    = true
 }
 
 module "vpc" {
@@ -32,7 +32,7 @@ module "vpc" {
 
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.2"
+  version = "2.0.3"
 
   name               = "${local.name}-subnet"
   environment        = local.environment
@@ -50,84 +50,113 @@ module "public_subnets" {
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
-  version = "2.0.2"
+  version = "2.0.3"
 
   name        = "${local.name}-ssh"
   environment = local.environment
   vpc_id      = module.vpc.vpc_id
-  new_sg_ingress_rules_with_cidr_blocks = [{
-    rule_count  = 1
-    from_port   = 22
-    protocol    = "tcp"
-    to_port     = 22
-    cidr_blocks = [local.vpc_cidr_block, local.additional_cidr_block]
-    description = "Allow ssh traffic."
-    }
+  new_sg_ingress_rules = [
+    {
+      key         = "ssh-vpc"
+      ip_protocol = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_ipv4   = local.vpc_cidr_block
+      description = "Allow ssh traffic."
+    },
+    {
+      key         = "ssh-additional"
+      ip_protocol = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_ipv4   = local.additional_cidr_block
+      description = "Allow ssh traffic."
+    },
   ]
 
   ## EGRESS Rules
-  new_sg_egress_rules_with_cidr_blocks = [{
-    rule_count  = 1
-    from_port   = 22
-    protocol    = "tcp"
-    to_port     = 22
-    cidr_blocks = [local.vpc_cidr_block, local.additional_cidr_block]
-    description = "Allow ssh outbound traffic."
-  }]
+  #
+  # Each 2.x rule takes exactly one source, so one CIDR per entry.
+  new_sg_egress_rules = [
+    {
+      key         = "ssh-out-vpc"
+      ip_protocol = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_ipv4   = local.vpc_cidr_block
+      description = "Allow ssh outbound traffic."
+    },
+    {
+      key         = "ssh-out-additional"
+      ip_protocol = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_ipv4   = local.additional_cidr_block
+      description = "Allow ssh outbound traffic."
+    },
+  ]
 }
 
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 module "http_https" {
   source  = "clouddrove/security-group/aws"
-  version = "2.0.2"
+  version = "2.0.3"
 
   name        = "${local.name}-http-https"
   environment = local.environment
 
   vpc_id = module.vpc.vpc_id
   ## INGRESS Rules
-  new_sg_ingress_rules_with_cidr_blocks = [{
-    rule_count  = 1
-    from_port   = 22
-    protocol    = "tcp"
-    to_port     = 22
-    cidr_blocks = [local.vpc_cidr_block]
-    description = "Allow ssh traffic."
+  new_sg_ingress_rules = [
+    {
+      key         = "ssh"
+      ip_protocol = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_ipv4   = local.vpc_cidr_block
+      description = "Allow ssh traffic."
     },
     {
-      rule_count  = 2
+      key         = "http"
+      ip_protocol = "tcp"
       from_port   = 80
-      protocol    = "tcp"
       to_port     = 80
-      cidr_blocks = [local.vpc_cidr_block]
+      cidr_ipv4   = local.vpc_cidr_block
       description = "Allow http traffic."
     },
     {
-      rule_count  = 3
+      key         = "https"
+      ip_protocol = "tcp"
       from_port   = 443
-      protocol    = "tcp"
       to_port     = 443
-      cidr_blocks = [local.vpc_cidr_block]
+      cidr_ipv4   = local.vpc_cidr_block
       description = "Allow https traffic."
-    }
+    },
   ]
 
   ## EGRESS Rules
-  new_sg_egress_rules_with_cidr_blocks = [{
-    rule_count       = 1
-    from_port        = 0
-    protocol         = "-1"
-    to_port          = 0
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-    description      = "Allow all traffic."
-    }
+  #
+  # 2.x builds one aws_vpc_security_group_egress_rule per entry, and each rule
+  # takes exactly one source, so IPv4 and IPv6 are separate entries.
+  new_sg_egress_rules = [
+    {
+      key         = "all-ipv4"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+      description = "Allow all ipv4 traffic."
+    },
+    {
+      key         = "all-ipv6"
+      ip_protocol = "-1"
+      cidr_ipv6   = "::/0"
+      description = "Allow all ipv6 traffic."
+    },
   ]
 }
 
 module "iam-role" {
   source  = "clouddrove/iam-role/aws"
-  version = "1.3.5"
+  version = "1.4.0"
 
   name               = "${local.name}-iam-role"
   environment        = local.environment
