@@ -83,7 +83,7 @@
 | spot\_min\_size\_scaledown | The minimum size for the Auto Scaling group of spot instances. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | `number` | `0` | no |
 | spot\_scale\_down\_desired | The number of Amazon EC2 instances that should be running in the group. | `number` | `0` | no |
 | spot\_scale\_up\_desired | The number of Amazon EC2 instances that should be running in the group. | `number` | `0` | no |
-| spot\_schedule\_enabled | AutoScaling Schedule resource for spot | `bool` | `false` | no |
+| spot\_schedule\_enabled | Whether to create the AutoScaling Schedule resources for spot instances. Mirrors schedule\_enabled on the on-demand path. | `bool` | `true` | no |
 | subnet\_ids | A list of subnet IDs to launch resources in. | `list(string)` | `[]` | no |
 | suspended\_processes | A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your autoscaling group from functioning properly. | `list(string)` | `[]` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
@@ -110,3 +110,4 @@
 | autoscaling\_group\_name | The autoscaling group name |
 | launch\_template\_arn | The ARN of the launch template |
 | launch\_template\_id | The ID of the launch template |
+
