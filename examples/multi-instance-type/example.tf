@@ -181,15 +181,6 @@ data "aws_iam_policy_document" "iam-policy" {
   }
 }
 
-################################################################################
-# EC2 AutoScaling module call with more than one instance type
-#
-# `mixed_instances_policy_enabled = true` switches the AutoScaling Group from the
-# default single `launch_template { instance_type = ... }` block to a
-# `mixed_instances_policy`, whose `override` entries list several instance types
-# the group is allowed to launch from. `instances_distribution` controls how AWS
-# splits capacity between On-Demand and Spot across those instance types.
-################################################################################
 
 module "ec2-autoscale" {
   source = "../../"
@@ -203,8 +194,7 @@ module "ec2-autoscale" {
   instance_profile_enabled  = true
   iam_instance_profile_name = module.iam-role.name
   user_data_base64          = ""
-  # `instance_type` still defines the launch template used by the group; the actual
-  # instance types launched are taken from `mixed_instances_overrides` below.
+
   instance_type = "t3.micro"
 
   # on_demand
