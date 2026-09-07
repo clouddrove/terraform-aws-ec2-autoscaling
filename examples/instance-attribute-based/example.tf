@@ -5,6 +5,7 @@ provider "aws" {
 locals {
   name                  = "ec2-autoscaling-attr-based"
   region                = "eu-west-1"
+  azs                   = ["${local.region}b", "${local.region}c"]
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
@@ -16,6 +17,7 @@ module "keypair" {
 
   name               = "${local.name}-key"
   environment        = local.environment
+  label_order        = ["environment", "name"]
   public_key         = ""
   enable_private_key = true
   enable_key_pair    = true
@@ -27,6 +29,7 @@ module "vpc" {
 
   name        = "${local.name}-vpc"
   environment = local.environment
+  label_order = ["environment", "name"]
   cidr_block  = "10.0.0.0/16"
 }
 
@@ -36,7 +39,7 @@ module "public_subnets" {
 
   name               = "${local.name}-subnet"
   environment        = local.environment
-  availability_zones = ["eu-west-1b", "eu-west-1c"]
+  availability_zones = local.azs
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
