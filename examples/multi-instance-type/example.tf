@@ -40,77 +40,12 @@ module "public_subnets" {
 
   name               = "${local.name}-subnet"
   environment        = local.environment
-  label_order        = local.label_order
   availability_zones = local.azs
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
   igw_id             = module.vpc.igw_id
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
-
-  public_inbound_acl_rules = [
-    {
-      rule_number = 100
-      rule_action = "allow"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_block  = module.vpc.vpc_cidr_block
-    },
-    {
-      rule_number = 110
-      rule_action = "allow"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-    },
-    {
-      rule_number = 120
-      rule_action = "allow"
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-    },
-    {
-      rule_number = 130
-      rule_action = "allow"
-      from_port   = 1024
-      to_port     = 65535
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-      description = "Ephemeral ports for return traffic"
-    },
-  ]
-
-  public_outbound_acl_rules = [
-    {
-      rule_number = 100
-      rule_action = "allow"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-    },
-    {
-      rule_number = 110
-      rule_action = "allow"
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-    },
-    {
-      rule_number = 120
-      rule_action = "allow"
-      from_port   = 1024
-      to_port     = 65535
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
-      description = "Ephemeral ports for replies to inbound connections"
-    },
-  ]
 }
 
 ################################################################################
