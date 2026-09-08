@@ -88,14 +88,30 @@ module "public_subnets" {
     {
       rule_number = 100
       rule_action = "allow"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
       cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number = 110
+      rule_action = "allow"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_block  = "0.0.0.0/0"
+    },
+    {
+      rule_number = 120
+      rule_action = "allow"
+      from_port   = 1024
+      to_port     = 65535
+      protocol    = "tcp"
+      cidr_block  = "0.0.0.0/0"
+      description = "Ephemeral ports for replies to inbound connections"
     },
   ]
 }
-
 ################################################################################
 # Security Groups module call
 ################################################################################
