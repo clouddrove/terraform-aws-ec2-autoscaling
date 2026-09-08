@@ -33,6 +33,7 @@ module "vpc" {
   cidr_block  = "10.0.0.0/16"
 }
 
+#tfsec:ignore:aws-ec2-no-public-ingress-acl
 module "public_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.3"
@@ -58,7 +59,7 @@ module "public_subnets" {
     },
     {
       rule_number = 110
-      rule_action = "allow" #tfsec:ignore:aws-ec2-no-public-ingress-acl
+      rule_action = "allow"
       from_port   = 80
       to_port     = 80
       protocol    = "tcp"
@@ -66,7 +67,7 @@ module "public_subnets" {
     },
     {
       rule_number = 120
-      rule_action = "allow" #tfsec:ignore:aws-ec2-no-public-ingress-acl
+      rule_action = "allow"
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
