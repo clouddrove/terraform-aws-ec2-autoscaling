@@ -347,7 +347,7 @@ variable "cpu_utilization_low_evaluation_periods" {
 
 variable "cpu_utilization_low_period_seconds" {
   type        = number
-  default     = 200
+  default     = 180
   description = "The period in seconds over which the specified statistic is applied."
 }
 
