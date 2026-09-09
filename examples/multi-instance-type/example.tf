@@ -330,10 +330,6 @@ module "ec2_autoscale" {
   min_elb_capacity            = 0
 
   #monitoring
-  enable_monitoring                                 = false
-  aws_cloudwatch_metric_alarm_enabled_cpu_high      = false
-  aws_cloudwatch_metric_alarm_enabled_cpu_high_spot = false
-  aws_cloudwatch_metric_alarm_enabled_cpu_low       = false
-  aws_cloudwatch_metric_alarm_enabled_cpu_low_spot  = false
+  enable_monitoring = false
 
 }

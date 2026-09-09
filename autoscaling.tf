@@ -57,7 +57,7 @@ resource "aws_autoscaling_policy" "scale_down_spot" {
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  count      = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high ? 1 : 0
+  count      = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high && var.enable_monitoring ? 1 : 0
   alarm_name = format("%s%scpu%sutilization%shigh", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
 
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -79,7 +79,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 #Module      : CLOUDWATCH METRIC ALARM CPU HIGH
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_high_spot" {
-  count      = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high_spot ? 1 : 0
+  count      = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_high_spot && var.enable_monitoring ? 1 : 0
   alarm_name = format("%s%scpu%sutilization%shigh-spot", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
 
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -102,7 +102,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high_spot" {
 #Module      : CLOUDWATCH METRIC ALARM CPU LOW
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  count               = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low ? 1 : 0
+  count               = local.autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low && var.enable_monitoring ? 1 : 0
   alarm_name          = format("%s%scpu%sutilization%slow", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
 #Module      : CLOUDWATCH METRIC ALARM CPU LOW
 #Description : Provides a CloudWatch Metric Alarm resource.
 resource "aws_cloudwatch_metric_alarm" "cpu_low_spot" {
-  count               = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low_spot ? 1 : 0
+  count               = local.spot_autoscaling_enabled && var.aws_cloudwatch_metric_alarm_enabled_cpu_low_spot && var.enable_monitoring ? 1 : 0
   alarm_name          = format("%s%scpu%sutilization%slow-spot", module.labels.id, var.delimiter, var.delimiter, var.delimiter)
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.cpu_utilization_low_evaluation_periods
