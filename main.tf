@@ -174,9 +174,80 @@ resource "aws_autoscaling_group" "on_demand" {
   protect_from_scale_in     = var.protect_from_scale_in
   service_linked_role_arn   = var.service_linked_role_arn
 
-  launch_template {
-    id      = join("", aws_launch_template.on_demand[*].id)
-    version = aws_launch_template.on_demand[0].latest_version
+  # A `launch_template` block with a single instance type is used unless `mixed_instances_policy_enabled`
+  # is set to `true`, in which case `mixed_instances_policy` below takes over instead (AWS does not allow
+  # both `launch_template` and `mixed_instances_policy` on the same AutoScaling Group).
+  dynamic "launch_template" {
+    for_each = var.mixed_instances_policy_enabled ? [] : [1]
+    content {
+      id      = join("", aws_launch_template.on_demand[*].id)
+      version = aws_launch_template.on_demand[0].latest_version
+    }
+  }
+
+  #Module      : MIXED INSTANCES POLICY
+  #Description : Lets the group launch more than one instance type (`examples/multi-instance-type`) or select
+  #              instance types dynamically based on vCPU/memory attributes (`examples/instance-attribute-based`).
+  dynamic "mixed_instances_policy" {
+    for_each = var.mixed_instances_policy_enabled ? [1] : []
+    content {
+      launch_template {
+        launch_template_specification {
+          launch_template_id = join("", aws_launch_template.on_demand[*].id)
+          version            = aws_launch_template.on_demand[0].latest_version
+        }
+
+        dynamic "override" {
+          for_each = var.mixed_instances_overrides
+          content {
+            instance_type     = try(override.value.instance_type, null)
+            weighted_capacity = try(override.value.weighted_capacity, null)
+
+            dynamic "instance_requirements" {
+              for_each = try(override.value.instance_requirements, null) != null ? [override.value.instance_requirements] : []
+              content {
+                vcpu_count {
+                  min = instance_requirements.value.vcpu_count.min
+                  max = try(instance_requirements.value.vcpu_count.max, null)
+                }
+                memory_mib {
+                  min = instance_requirements.value.memory_mib.min
+                  max = try(instance_requirements.value.memory_mib.max, null)
+                }
+
+                dynamic "memory_gib_per_vcpu" {
+                  for_each = try(instance_requirements.value.memory_gib_per_vcpu, null) != null ? [instance_requirements.value.memory_gib_per_vcpu] : []
+                  content {
+                    min = try(memory_gib_per_vcpu.value.min, null)
+                    max = try(memory_gib_per_vcpu.value.max, null)
+                  }
+                }
+
+                instance_generations                             = try(instance_requirements.value.instance_generations, null)
+                cpu_manufacturers                                = try(instance_requirements.value.cpu_manufacturers, null)
+                allowed_instance_types                           = try(instance_requirements.value.allowed_instance_types, null)
+                excluded_instance_types                          = try(instance_requirements.value.excluded_instance_types, null)
+                burstable_performance                            = try(instance_requirements.value.burstable_performance, null)
+                on_demand_max_price_percentage_over_lowest_price = try(instance_requirements.value.on_demand_max_price_percentage_over_lowest_price, null)
+                spot_max_price_percentage_over_lowest_price      = try(instance_requirements.value.spot_max_price_percentage_over_lowest_price, null)
+              }
+            }
+          }
+        }
+      }
+
+      dynamic "instances_distribution" {
+        for_each = var.mixed_instances_distribution != null ? [var.mixed_instances_distribution] : []
+        content {
+          on_demand_allocation_strategy            = try(instances_distribution.value.on_demand_allocation_strategy, null)
+          on_demand_base_capacity                  = try(instances_distribution.value.on_demand_base_capacity, null)
+          on_demand_percentage_above_base_capacity = try(instances_distribution.value.on_demand_percentage_above_base_capacity, null)
+          spot_allocation_strategy                 = try(instances_distribution.value.spot_allocation_strategy, null)
+          spot_instance_pools                      = try(instances_distribution.value.spot_instance_pools, null)
+          spot_max_price                           = try(instances_distribution.value.spot_max_price, null)
+        }
+      }
+    }
   }
 
   dynamic "tag" {

@@ -67,6 +67,43 @@ variable "instance_type" {
   description = "Instance type to launch."
 }
 
+#Module      : MIXED INSTANCES POLICY
+#Description : Variables to let the on-demand AutoScaling Group launch more than one instance
+#              type, or select instance types dynamically based on vCPU/memory attributes,
+#              instead of the single `instance_type`.
+variable "mixed_instances_policy_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to launch the on-demand AutoScaling Group with a `mixed_instances_policy` instead of a single `instance_type`. Set to `true` to use `mixed_instances_overrides` for multiple instance types or attribute-based instance type selection."
+}
+
+variable "mixed_instances_distribution" {
+  type        = any
+  default     = null
+  description = <<-EOT
+    `instances_distribution` block for the mixed instances policy. Only used when `mixed_instances_policy_enabled` is `true`.
+    Supports the following optional keys: `on_demand_allocation_strategy`, `on_demand_base_capacity`,
+    `on_demand_percentage_above_base_capacity`, `spot_allocation_strategy`, `spot_instance_pools`, `spot_max_price`.
+    Set to `null` to let AWS use its default distribution.
+  EOT
+}
+
+variable "mixed_instances_overrides" {
+  type        = list(any)
+  default     = []
+  description = <<-EOT
+    List of launch template `override` entries for the mixed instances policy. Only used when `mixed_instances_policy_enabled` is `true`.
+    Each entry is EITHER:
+      - `{ instance_type = "t3.micro", weighted_capacity = "1" }` to pin one of several explicit instance types, OR
+      - `{ instance_requirements = { vcpu_count = { min = 2, max = 4 }, memory_mib = { min = 2048, max = 8192 }, ... } }`
+        for attribute-based instance type selection (vCPU/memory instead of named instance types).
+    `weighted_capacity` is optional. Supported `instance_requirements` keys: `vcpu_count` (required, `{min, max}`),
+    `memory_mib` (required, `{min, max}`), `memory_gib_per_vcpu` (optional `{min, max}`), `instance_generations` (optional list),
+    `cpu_manufacturers` (optional list), `excluded_instance_types` (optional list), `burstable_performance` (optional string),
+    `on_demand_max_price_percentage_over_lowest_price` (optional number), `spot_max_price_percentage_over_lowest_price` (optional number).
+  EOT
+}
+
 variable "iam_instance_profile_name" {
   type        = string
   default     = null
@@ -310,7 +347,7 @@ variable "cpu_utilization_low_evaluation_periods" {
 
 variable "cpu_utilization_low_period_seconds" {
   type        = number
-  default     = 200
+  default     = 180
   description = "The period in seconds over which the specified statistic is applied."
 }
 
