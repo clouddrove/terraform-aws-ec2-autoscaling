@@ -16,7 +16,7 @@
 | cpu\_utilization\_high\_statistic | The statistic to apply to the alarm's associated metric. Either of the following is supported: `SampleCount`, `Average`, `Sum`, `Minimum`, `Maximum`. | `string` | `"Average"` | no |
 | cpu\_utilization\_high\_threshold\_percent | The value against which the specified statistic is compared. | `number` | `90` | no |
 | cpu\_utilization\_low\_evaluation\_periods | The number of periods over which data is compared to the specified threshold. | `number` | `2` | no |
-| cpu\_utilization\_low\_period\_seconds | The period in seconds over which the specified statistic is applied. | `number` | `200` | no |
+| cpu\_utilization\_low\_period\_seconds | The period in seconds over which the specified statistic is applied. | `number` | `180` | no |
 | cpu\_utilization\_low\_statistic | The statistic to apply to the alarm's associated metric. Either of the following is supported: `SampleCount`, `Average`, `Sum`, `Minimum`, `Maximum`. | `string` | `"Average"` | no |
 | cpu\_utilization\_low\_threshold\_percent | The value against which the specified statistic is compared. | `number` | `10` | no |
 | default\_cooldown | The amount of time, in seconds, after a scaling activity completes before another scaling activity can start. | `number` | `150` | no |
@@ -55,6 +55,9 @@
 | min\_size | The minimum size of the autoscale group. | `number` | `1` | no |
 | min\_size\_scaledown | The minimum size for the Auto Scaling group. Default 0. Set to -1 if you don't want to change the minimum size at the scheduled time. | `number` | `0` | no |
 | min\_size\_scaleup | The minimum size of the autoscale group. | `number` | `1` | no |
+| mixed\_instances\_distribution | `instances_distribution` block for the mixed instances policy. Only used when `mixed_instances_policy_enabled` is `true`.<br>Supports the following optional keys: `on_demand_allocation_strategy`, `on_demand_base_capacity`,<br>`on_demand_percentage_above_base_capacity`, `spot_allocation_strategy`, `spot_instance_pools`, `spot_max_price`.<br>Set to `null` to let AWS use its default distribution. | `any` | `null` | no |
+| mixed\_instances\_overrides | List of launch template `override` entries for the mixed instances policy. Only used when `mixed_instances_policy_enabled` is `true`.<br>Each entry is EITHER:<br>  - `{ instance_type = "t3.micro", weighted_capacity = "1" }` to pin one of several explicit instance types, OR<br>  - `{ instance_requirements = { vcpu_count = { min = 2, max = 4 }, memory_mib = { min = 2048, max = 8192 }, ... } }`<br>    for attribute-based instance type selection (vCPU/memory instead of named instance types).<br>`weighted_capacity` is optional. Supported `instance_requirements` keys: `vcpu_count` (required, `{min, max}`),<br>`memory_mib` (required, `{min, max}`), `memory_gib_per_vcpu` (optional `{min, max}`), `instance_generations` (optional list),<br>`cpu_manufacturers` (optional list), `excluded_instance_types` (optional list), `burstable_performance` (optional string),<br>`on_demand_max_price_percentage_over_lowest_price` (optional number), `spot_max_price_percentage_over_lowest_price` (optional number). | `list(any)` | `[]` | no |
+| mixed\_instances\_policy\_enabled | Whether to launch the on-demand AutoScaling Group with a `mixed_instances_policy` instead of a single `instance_type`. Set to `true` to use `mixed_instances_overrides` for multiple instance types or attribute-based instance type selection. | `bool` | `false` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
 | on\_demand\_enabled | Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling. | `bool` | `true` | no |
 | protect\_from\_scale\_in | Allows setting instance protection. The autoscaling group will not select instances with this setting for terminination during scale in events. | `bool` | `false` | no |
@@ -110,3 +113,4 @@
 | autoscaling\_group\_name | The autoscaling group name |
 | launch\_template\_arn | The ARN of the launch template |
 | launch\_template\_id | The ID of the launch template |
+
