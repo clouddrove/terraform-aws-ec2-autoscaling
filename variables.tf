@@ -263,7 +263,7 @@ variable "service_linked_role_arn" {
 
 variable "on_demand_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
 }
 
@@ -492,7 +492,7 @@ variable "schedule_enabled" {
 
 variable "spot_schedule_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create the AutoScaling Schedule resources for spot instances. Mirrors schedule_enabled on the on-demand path."
 }
 

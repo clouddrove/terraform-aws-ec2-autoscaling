@@ -1,16 +1,3 @@
-provider "aws" {
-  region = local.region
-}
-
-locals {
-  name                  = "ec2-autoscaling-attr-based"
-  region                = "eu-west-1"
-  azs                   = ["${local.region}b", "${local.region}c"]
-  additional_cidr_block = "172.16.0.0/16"
-  environment           = "test"
-  label_order           = ["environment", "name"]
-}
-
 module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.4"
@@ -54,7 +41,7 @@ module "public_subnets" {
       rule_action = "allow"
       from_port   = 22
       to_port     = 22
-      protocol    = "tcp"
+      protocol    = local.protocol_tcp
       cidr_block  = module.vpc.vpc_cidr_block
     },
     {
@@ -62,24 +49,24 @@ module "public_subnets" {
       rule_action = "allow"
       from_port   = 80
       to_port     = 80
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
     },
     {
       rule_number = 120
       rule_action = "allow"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
     },
     {
       rule_number = 130
       rule_action = "allow"
       from_port   = 1024
       to_port     = 65535
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
       description = "Ephemeral ports for return traffic"
     },
   ]
@@ -90,24 +77,24 @@ module "public_subnets" {
       rule_action = "allow"
       from_port   = 80
       to_port     = 80
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
     },
     {
       rule_number = 110
       rule_action = "allow"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
     },
     {
       rule_number = 120
       rule_action = "allow"
       from_port   = 1024
       to_port     = 65535
-      protocol    = "tcp"
-      cidr_block  = "0.0.0.0/0"
+      protocol    = local.protocol_tcp
+      cidr_block  = local.cidr_block_allow_all
       description = "Ephemeral ports for replies to inbound connections"
     },
   ]
@@ -128,7 +115,7 @@ module "ssh" {
   new_sg_ingress_rules = [
     {
       key         = "ssh-vpc"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = module.vpc.vpc_cidr_block
@@ -136,7 +123,7 @@ module "ssh" {
     },
     {
       key         = "ssh-additional"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.additional_cidr_block
@@ -147,7 +134,7 @@ module "ssh" {
   new_sg_egress_rules = [
     {
       key         = "ssh-out-vpc"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = module.vpc.vpc_cidr_block
@@ -155,7 +142,7 @@ module "ssh" {
     },
     {
       key         = "ssh-out-additional"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.additional_cidr_block
@@ -178,7 +165,7 @@ module "http_https" {
   new_sg_ingress_rules = [
     {
       key         = "ssh"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = module.vpc.vpc_cidr_block
@@ -186,7 +173,7 @@ module "http_https" {
     },
     {
       key         = "http"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 80
       to_port     = 80
       cidr_ipv4   = module.vpc.vpc_cidr_block
@@ -194,7 +181,7 @@ module "http_https" {
     },
     {
       key         = "https"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 443
       to_port     = 443
       cidr_ipv4   = module.vpc.vpc_cidr_block
@@ -206,7 +193,7 @@ module "http_https" {
     {
       key         = "all-ipv4"
       ip_protocol = "-1"
-      cidr_ipv4   = "0.0.0.0/0"
+      cidr_ipv4   = local.cidr_block_allow_all
       description = "Allow all ipv4 traffic."
     },
     {
@@ -228,55 +215,6 @@ module "iam_role" {
   assume_role_policy = data.aws_iam_policy_document.default.json
   policy_enabled     = true
   policy             = data.aws_iam_policy_document.iam-policy.json
-}
-
-data "aws_iam_policy_document" "default" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "iam-policy" {
-  statement {
-    actions = [
-      "ssm:UpdateInstanceInformation",
-      "ssmmessages:CreateControlChannel",
-      "ssmmessages:CreateDataChannel",
-      "ssmmessages:OpenControlChannel",
-    "ssmmessages:OpenDataChannel"]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
-data "aws_ami" "ami" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-2023.*-kernel-6.18-x86_64"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
 }
 
 module "ec2_autoscale" {
