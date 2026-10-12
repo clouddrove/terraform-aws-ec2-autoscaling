@@ -1,3 +1,43 @@
+provider "aws" {
+  region = local.region
+}
+
+locals {
+  name                  = "clouddrove"
+  region                = "eu-west-1"
+  azs                   = ["${local.region}b", "${local.region}c"]
+  vpc_cidr_block        = module.vpc.vpc_cidr_block
+  additional_cidr_block = "172.16.0.0/16"
+  environment           = "test"
+  label_order           = ["environment", "name"]
+  protocol_tcp          = "tcp"
+
+}
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
 module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.4"
@@ -18,7 +58,7 @@ module "vpc" {
   environment = local.environment
   cidr_block  = "10.0.0.0/16"
   label_order = local.label_order
-  
+
 }
 
 module "public_subnets" {
@@ -160,6 +200,7 @@ module "iam-role" {
   policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
+# https://registry.terraform.io/modules/clouddrove/ec2-autoscaling/aws/latest
 module "ec2-autoscale" {
   source = "../../"
 
@@ -190,6 +231,4 @@ module "ec2-autoscale" {
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
 
-  #monitoring
-  enable_monitoring = false
 }

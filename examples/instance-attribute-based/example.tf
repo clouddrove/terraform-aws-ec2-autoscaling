@@ -1,3 +1,67 @@
+provider "aws" {
+  region = local.region
+}
+
+locals {
+  name                  = "clouddrove"
+  region                = "eu-west-1"
+  azs                   = ["${local.region}b", "${local.region}c"]
+  additional_cidr_block = "172.16.0.0/16"
+  environment           = "test"
+  label_order           = ["environment", "name"]
+  cidr_block_allow_all  = "0.0.0.0/0"
+  protocol_tcp          = "tcp"
+}
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+data "aws_ami" "ami" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-kernel-6.18-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+
 module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.4"
@@ -217,6 +281,7 @@ module "iam_role" {
   policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
+# https://registry.terraform.io/modules/clouddrove/ec2-autoscaling/aws/latest
 module "ec2_autoscale" {
   source = "../../"
 
@@ -284,8 +349,5 @@ module "ec2_autoscale" {
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
   security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
   min_elb_capacity            = 0
-
-  #monitoring
-  enable_monitoring = false
 
 }

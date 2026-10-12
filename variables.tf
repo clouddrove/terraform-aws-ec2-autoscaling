@@ -45,7 +45,7 @@ variable "delimiter" {
 
 variable "enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources."
 }
 
@@ -130,7 +130,7 @@ variable "associate_public_ip_address" {
 
 variable "instance_profile_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Associate a public IP address with an instance in a VPC."
 }
 
@@ -142,7 +142,7 @@ variable "user_data_base64" {
 
 variable "enable_monitoring" {
   type        = bool
-  default     = true
+  default     = false
   description = "Enable/disable detailed monitoring."
 }
 
