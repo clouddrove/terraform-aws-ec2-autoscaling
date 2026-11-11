@@ -38,6 +38,31 @@ data "aws_iam_policy_document" "iam-policy" {
   }
 }
 
+data "aws_ami" "ami" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-kernel-6.18-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+
 module "keypair" {
   source  = "clouddrove/keypair/aws"
   version = "1.3.4"
@@ -209,7 +234,7 @@ module "ec2-autoscale" {
   environment = local.environment
 
   #Launch template
-  image_id                  = "ami-08bac620dc84221eb"
+  image_id                  = data.aws_ami.ami.id
   instance_profile_enabled  = true
   iam_instance_profile_name = module.iam-role.name
   user_data_base64          = ""
