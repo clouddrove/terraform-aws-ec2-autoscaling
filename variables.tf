@@ -45,7 +45,7 @@ variable "delimiter" {
 
 variable "enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create the resources. Set to `false` to prevent the module from creating any resources."
 }
 
@@ -130,7 +130,7 @@ variable "associate_public_ip_address" {
 
 variable "instance_profile_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Associate a public IP address with an instance in a VPC."
 }
 
@@ -142,7 +142,7 @@ variable "user_data_base64" {
 
 variable "enable_monitoring" {
   type        = bool
-  default     = true
+  default     = false
   description = "Enable/disable detailed monitoring."
 }
 
@@ -263,7 +263,7 @@ variable "service_linked_role_arn" {
 
 variable "on_demand_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create `aws_autoscaling_policy` and `aws_cloudwatch_metric_alarm` resources to control Auto Scaling."
 }
 
@@ -492,7 +492,7 @@ variable "schedule_enabled" {
 
 variable "spot_schedule_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Whether to create the AutoScaling Schedule resources for spot instances. Mirrors schedule_enabled on the on-demand path."
 }
 

@@ -3,11 +3,64 @@ provider "aws" {
 }
 
 locals {
-  name                  = "ec2-autoscaling"
+  name                  = "clouddrove"
   region                = "eu-west-1"
+  azs                   = ["${local.region}b", "${local.region}c"]
   vpc_cidr_block        = module.vpc.vpc_cidr_block
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
+  label_order           = ["environment", "name"]
+  protocol_tcp          = "tcp"
+
+}
+
+data "aws_iam_policy_document" "default" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "iam-policy" {
+  statement {
+    actions = [
+      "ssm:UpdateInstanceInformation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+    "ssmmessages:OpenDataChannel"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
+
+data "aws_ami" "ami" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-kernel-6.18-x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
 }
 
 module "keypair" {
@@ -16,6 +69,7 @@ module "keypair" {
 
   name               = "${local.name}-key"
   environment        = local.environment
+  label_order        = local.label_order
   public_key         = ""
   enable_private_key = true
   enable_key_pair    = true
@@ -28,6 +82,8 @@ module "vpc" {
   name        = "${local.name}-vpc"
   environment = local.environment
   cidr_block  = "10.0.0.0/16"
+  label_order = local.label_order
+
 }
 
 module "public_subnets" {
@@ -36,7 +92,8 @@ module "public_subnets" {
 
   name               = "${local.name}-subnet"
   environment        = local.environment
-  availability_zones = ["eu-west-1b", "eu-west-1c"]
+  label_order        = local.label_order
+  availability_zones = local.azs
   vpc_id             = module.vpc.vpc_id
   cidr_block         = module.vpc.vpc_cidr_block
   type               = "public"
@@ -46,7 +103,7 @@ module "public_subnets" {
 
 # ################################################################################
 # Security Groups module call
-################################################################################
+# ################################################################################
 
 module "ssh" {
   source  = "clouddrove/security-group/aws"
@@ -54,11 +111,12 @@ module "ssh" {
 
   name        = "${local.name}-ssh"
   environment = local.environment
+  label_order = local.label_order
   vpc_id      = module.vpc.vpc_id
   new_sg_ingress_rules = [
     {
       key         = "ssh-vpc"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.vpc_cidr_block
@@ -66,7 +124,7 @@ module "ssh" {
     },
     {
       key         = "ssh-additional"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.additional_cidr_block
@@ -80,7 +138,7 @@ module "ssh" {
   new_sg_egress_rules = [
     {
       key         = "ssh-out-vpc"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.vpc_cidr_block
@@ -88,7 +146,7 @@ module "ssh" {
     },
     {
       key         = "ssh-out-additional"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.additional_cidr_block
@@ -104,13 +162,14 @@ module "http_https" {
 
   name        = "${local.name}-http-https"
   environment = local.environment
+  label_order = local.label_order
 
   vpc_id = module.vpc.vpc_id
   ## INGRESS Rules
   new_sg_ingress_rules = [
     {
       key         = "ssh"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 22
       to_port     = 22
       cidr_ipv4   = local.vpc_cidr_block
@@ -118,7 +177,7 @@ module "http_https" {
     },
     {
       key         = "http"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 80
       to_port     = 80
       cidr_ipv4   = local.vpc_cidr_block
@@ -126,7 +185,7 @@ module "http_https" {
     },
     {
       key         = "https"
-      ip_protocol = "tcp"
+      ip_protocol = local.protocol_tcp
       from_port   = 443
       to_port     = 443
       cidr_ipv4   = local.vpc_cidr_block
@@ -160,113 +219,41 @@ module "iam-role" {
 
   name               = "${local.name}-iam-role"
   environment        = local.environment
+  label_order        = local.label_order
   assume_role_policy = data.aws_iam_policy_document.default.json
   policy_enabled     = true
   policy             = data.aws_iam_policy_document.iam-policy.json
 }
 
-data "aws_iam_policy_document" "default" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "iam-policy" {
-  statement {
-    actions = [
-      "ssm:UpdateInstanceInformation",
-      "ssmmessages:CreateControlChannel",
-      "ssmmessages:CreateDataChannel",
-      "ssmmessages:OpenControlChannel",
-    "ssmmessages:OpenDataChannel"]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
+# https://registry.terraform.io/modules/clouddrove/ec2-autoscaling/aws/latest
 module "ec2-autoscale" {
   source = "../../"
 
   enabled     = true
-  name        = "${local.name}-test"
+  name        = local.name
   environment = local.environment
 
   #Launch template
-  image_id                  = "ami-08bac620dc84221eb"
+  image_id                  = data.aws_ami.ami.id
   instance_profile_enabled  = true
   iam_instance_profile_name = module.iam-role.name
   user_data_base64          = ""
   instance_type             = "t2.nano"
 
-  # on_dimand
+  #on_demand
   on_demand_enabled = true
   min_size          = 1
   desired_capacity  = 1
   max_size          = 2
-
-  # schedule_instance
-  schedule_enabled = true
-
-  # up
-  scheduler_up     = "0 8 * * MON-FRI"
-  min_size_scaleup = 2
-  scale_up_desired = 2
-  max_size_scaleup = 3
-
-  # down
-  scheduler_down     = "0 22 * * MON-FRI"
-  min_size_scaledown = 1
-  scale_down_desired = 1
-  max_size_scaledown = 2
+  min_elb_capacity  = 0
 
   #volumes
-  volume_type    = "standard"
-  ebs_encryption = false
-  kms_key_arn    = ""
-  volume_size    = 20
+  volume_size = 20
 
   #Network
   associate_public_ip_address = true
   key_name                    = module.keypair.name
   subnet_ids                  = tolist(module.public_subnets.public_subnet_id)
-  load_balancers              = []
   security_group_ids          = [module.ssh.security_group_id, module.http_https.security_group_id]
-  min_elb_capacity            = 0
-  target_group_arns           = []
-  health_check_type           = "EC2"
 
-  instance_initiated_shutdown_behavior = "terminate"
-  enable_monitoring                    = true
-  default_cooldown                     = 150
-  force_delete                         = false
-  termination_policies                 = ["Default"]
-  suspended_processes                  = []
-  enabled_metrics                      = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupPendingInstances", "GroupStandbyInstances", "GroupTerminatingInstances", "GroupTotalInstances"]
-  metrics_granularity                  = "1Minute"
-  wait_for_capacity_timeout            = "15m"
-  protect_from_scale_in                = false
-  service_linked_role_arn              = ""
-
-  scale_up_cooldown_seconds     = 150
-  scale_up_scaling_adjustment   = 1
-  scale_up_adjustment_type      = "ChangeInCapacity"
-  scale_up_policy_type          = "SimpleScaling"
-  scale_down_cooldown_seconds   = 300
-  scale_down_scaling_adjustment = -1
-  scale_down_adjustment_type    = "ChangeInCapacity"
-  scale_down_policy_type        = "SimpleScaling"
-
-  cpu_utilization_high_evaluation_periods = 2
-  cpu_utilization_high_period_seconds     = 300
-  cpu_utilization_high_threshold_percent  = 10
-  cpu_utilization_high_statistic          = "Average"
-  cpu_utilization_low_evaluation_periods  = 2
-  cpu_utilization_low_period_seconds      = 180
-  cpu_utilization_low_statistic           = "Average"
-  cpu_utilization_low_threshold_percent   = 1
 }
