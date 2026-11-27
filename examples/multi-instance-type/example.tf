@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name                  = "ec2-autoscaling-multi-type"
-  region                = "eu-west-1"
+  region                = "ca-central-1"
   azs                   = ["${local.region}b", "${local.region}c"]
   additional_cidr_block = "172.16.0.0/16"
   environment           = "test"
