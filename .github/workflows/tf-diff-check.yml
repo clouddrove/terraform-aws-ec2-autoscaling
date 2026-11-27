@@ -1,0 +1,45 @@
+---
+name: Terraform Difference Checks
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  issues: write
+
+on:
+  pull_request:
+    paths:
+      - '**/*.tf'
+      - '*.tf'
+jobs:
+  tf-checks-instance-attribute-based-example:
+    if: github.actor != 'dependabot[bot]'
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
+    with:
+      working_directory: './examples/instance-attribute-based/'
+      provider: 'aws'
+      target_branch: 'master'
+      aws_region: 'ca-central-1'
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
+  tf-checks-multi-instance-type-example:
+    if: github.actor != 'dependabot[bot]'
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
+    with:
+      working_directory: './examples/multi-instance-type/'
+      provider: 'aws'
+      target_branch: 'master'
+      aws_region: 'ca-central-1'
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
+  tf-checks-on-demand-example:
+    if: github.actor != 'dependabot[bot]'
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
+    with:
+      working_directory: './examples/on-demand/'
+      provider: 'aws'
+      target_branch: 'master'
+      aws_region: 'ca-central-1'
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
